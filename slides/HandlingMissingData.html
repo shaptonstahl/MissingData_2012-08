@@ -242,84 +242,95 @@ Stephen Haptonstahl<br/>Berico Technologies
   </p>
   <p class="date">2012/08/30</p>
 </div>
-<div class="section slide level2" id="section">
-
-<!-- Compile with: pandoc -i -s -S -toc --latexmathml -t slidy -o HandlingMissingData.html HandlingMissingData.md -->
-
-</div>
 <div class="section titleslide slide level1" id="the-problem"><h1>The Problem</h1></div><div class="section slide level2" id="data-in-theory">
 <h1>Data, in theory</h1>
+<!-- Compile with: pandoc -i -s -S -toc --latexmathml -t slidy -o HandlingMissingData.html HandlingMissingData.md -->
+
+<p>Suppose we want to mine sales records to see what kind of customer buys more from us.</p>
 <table>
-<caption>Made-up data</caption>
 <thead>
 <tr class="header">
-<th align="right">Right</th>
-<th align="left">Left</th>
-<th align="center">Center</th>
-<th align="left">Default</th>
+<th align="right">sales</th>
+<th align="center">female</th>
+<th align="center">education</th>
+<th align="right">income</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">12</td>
-<td align="left">12</td>
-<td align="center">12</td>
-<td align="left">12</td>
+<td align="right">1209</td>
+<td align="center">0</td>
+<td align="center">high school</td>
+<td align="right">35000</td>
 </tr>
 <tr class="even">
-<td align="right">123</td>
-<td align="left">123</td>
-<td align="center">123</td>
-<td align="left">123</td>
+<td align="right">2587</td>
+<td align="center">1</td>
+<td align="center">4yr degree</td>
+<td align="right">45000</td>
 </tr>
 <tr class="odd">
-<td align="right">1</td>
-<td align="left">1</td>
+<td align="right">13265</td>
 <td align="center">1</td>
-<td align="left">1</td>
+<td align="center">grad degree</td>
+<td align="right">65000</td>
+</tr>
+<tr class="even">
+<td align="right">2298</td>
+<td align="center">0</td>
+<td align="center">some college</td>
+<td align="right">49000</td>
 </tr>
 </tbody>
 </table>
 </div><div class="section slide level2" id="data-in-practice">
 <h1>Data, in practice</h1>
+<p>Suppose we want to mine sales records to see what kind of customer buys more from us.</p>
 <table>
-<caption>Made-up data</caption>
 <thead>
 <tr class="header">
-<th align="right">Right</th>
-<th align="left">Left</th>
-<th align="center">Center</th>
-<th align="left">Default</th>
+<th align="right">sales</th>
+<th align="center">female</th>
+<th align="center">education</th>
+<th align="right">income</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">12</td>
-<td align="left">12</td>
-<td align="center">12</td>
-<td align="left"> </td>
+<td align="right">1209</td>
+<td align="center">0</td>
+<td align="center">high school</td>
+<td align="right">35000</td>
 </tr>
 <tr class="even">
-<td align="right"> </td>
-<td align="left">123</td>
-<td align="center">123</td>
-<td align="left">123</td>
+<td align="right">2587</td>
+<td align="center">NA</td>
+<td align="center">4yr degree</td>
+<td align="right">45000</td>
 </tr>
 <tr class="odd">
-<td align="right">1</td>
-<td align="left">1</td>
-<td align="center"> </td>
-<td align="left">1</td>
+<td align="right">13265</td>
+<td align="center">1</td>
+<td align="center">NA</td>
+<td align="right">65000</td>
+</tr>
+<tr class="even">
+<td align="right">NA</td>
+<td align="center">0</td>
+<td align="center">some college</td>
+<td align="right">49000</td>
 </tr>
 </tbody>
 </table>
 </div><div class="section slide level2" id="who-cares">
 <h1>Who cares?</h1>
 <ul class="incremental">
-<li>Best case: throwing away data</li>
+<li>Best case if you ignore missing data: throwing away data</li>
 <li>Same as loss of efficiency</li>
-<li>Less certainty (statistical significance)</li>
-<li>Some patterns will be completely missed</li>
+<li>Less certainty (less statistical significance)</li>
+<li><strong>Some patterns will be completely missed</strong></li>
+<li>Data scientists are replaced by equally incompetent algorithms, ie.</li>
+<li>Mass hysteria</li>
 </ul>
 </div><div class="section slide level2" id="todays-talk">
 <h1>Today’s talk</h1>
@@ -327,22 +338,34 @@ Stephen Haptonstahl<br/>Berico Technologies
 
 <ul class="incremental">
 <li>The Problem</li>
-<li>Problems in Handling Missing Data</li>
+<li>Typical Method Versus a Better Method</li>
 <li>Naive Imputation</li>
 <li>Home-Rolled Imputation</li>
-<li>Pre-sliced solutions
+<li>Existing Tools
 <ul class="incremental">
-<li>Small data sets</li>
-<li>Large data sets</li>
+<li>Small Data Sets</li>
+<li>Large Data Sets</li>
 <li>Real-time</li>
 </ul></li>
-<li>Modeling Nonignorable Missingness</li>
+<li>When Imputation Fails</li>
+<li>Fin</li>
 </ul>
 </div>
-<div class="section titleslide slide level1" id="problems-in-handling-missing-data"><h1>Problems in Handling Missing Data</h1></div><div class="section slide level2" id="the-evil-that-is-row-deletion">
+<div class="section titleslide slide level1" id="typical-method-versus-a-better-method"><h1>Typical Method Versus a Better Method</h1></div><div class="section slide level2" id="the-evil-that-is-row-deletion">
 <h1>(The Evil that is) Row Deletion</h1>
 <ul class="incremental">
-<li>bullet</li>
+<li>Idea: Only include full rows in the analysis.</li>
+<li>This is the most common method.
+<ul class="incremental">
+<li>Default for most software, inluding <tt>lm</tt> and other <tt>R</tt> functions.</li>
+</ul></li>
+<li>Throws away data, perhaps a lot.
+<ul class="incremental">
+<li>Ex: 50 fields for each customer</li>
+<li>How many have all 50 observed? (Ans: none except test data)</li>
+</ul></li>
+<li><strong>Some patterns will be completely missed</strong></li>
+<li>We know where this leads</li>
 </ul>
 </div><div class="section slide level2" id="what-is-imputation">
 <h1>What is imputation?</h1>
@@ -351,28 +374,146 @@ Stephen Haptonstahl<br/>Berico Technologies
 <dd>Filling in missing data with guesses, good or bad, for what would have been observed.
 </dd>
 </dl>
+<ul class="incremental">
+<li>Example 1: “These scientists all say the earth is warming, but today it’s cold. They must be in a conspiracy!”</li>
+<li>Example 2: “These scientists all say the earth is warming, but today it’s cold. Perhaps they only measured on warm days.”</li>
+<li>Both are wrong, but one is a better (more likely to be true) guess than the other.</li>
+<li>The better guess will be less likely to lead you to bad decisions, algorithms, hysteria, etc.</li>
+</ul>
 </div><div class="section slide level2" id="when-is-imputation-bad">
 <h1>When is imputation bad</h1>
-<ul class="incremental">
-<li>Missingness process not ignorable</li>
-<li>Missingness depends on unobserved data</li>
-<li>Get into MCAR, MAR, Rubin</li>
-</ul>
 <blockquote>
 <p>If only we knew what was there. Then we would be able to make a good guess at what was there.</p>
 </blockquote>
+<ul class="incremental">
+<li>Missingness process <strong>not ignorable</strong>, which means</li>
+<li>Missingness depends on unobserved data</li>
+<li>Types of data-generating processes
+<ol class="incremental" style="list-style-type: decimal">
+<li>Missing Completely At Random (MCAR): <em>no data</em> will help you predict which values are missing
+<ul class="incremental">
+<li>Random noise</li>
+</ul></li>
+<li>Missing at Random (MAR): <em>observed values</em> can help you predict which values are missing
+<ul class="incremental">
+<li>Faulty switches</li>
+</ul></li>
+<li>Not ignorable (NMAR): <em>unobserved values</em> can help you predict which values are missing
+<ul class="incremental">
+<li>Losses reported as zero income (censored)</li>
+</ul></li>
+</ol></li>
+<li>Imputing when missingness is not ignorable leads to bias, bad decisions, etc.</li>
+<li>cf. Donald Rubin (1976)</li>
+</ul>
 </div>
 <div class="section titleslide slide level1" id="naive-imputation"><h1>Naive Imputation</h1></div><div class="section slide level2" id="mean-median-mode">
 <h1>Mean, Median, Mode</h1>
+<blockquote>
+<p>We just filled in the missing values with zero.</p>
+</blockquote>
+<p>How we guess (hopefully) depends on what we expect to be there.</p>
 <ul class="incremental">
-<li>Be specific on what kinds of variables each can summarize (categorical, ordinal, continuous)</li>
+<li>Continuous variable
+<ul class="incremental">
+<li>floating point</li>
+<li>Use <tt>mean</tt></li>
+</ul></li>
+<li>Ordinal (disagree, neither agree nor disagree, agree): <tt>median</tt></li>
+<li>Count (or other integer): <tt>median</tt></li>
+<li><p>Categorical (states; colors): mode</p>
+<p><tt>StatMode &lt;- function(x) names(table(x))[which.max(table(x))]</tt></p></li>
 </ul>
 </div><div class="section slide level2" id="mean-median-mode-continued">
 <h1>Mean, Median, Mode (continued)</h1>
-<p>Example table with missing values</p>
+<p>Suppose we want to mine sales records to see what kind of customer buys more from us.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="right">sales</th>
+<th align="center">female</th>
+<th align="center">education</th>
+<th align="right">income</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1209</td>
+<td align="center">0</td>
+<td align="center">high school</td>
+<td align="right">35000</td>
+</tr>
+<tr class="even">
+<td align="right">2587</td>
+<td align="center">NA</td>
+<td align="center">4yr degree</td>
+<td align="right">45000</td>
+</tr>
+<tr class="odd">
+<td align="right">13265</td>
+<td align="center">1</td>
+<td align="center">NA</td>
+<td align="right">65000</td>
+</tr>
+<tr class="even">
+<td align="right">NA</td>
+<td align="center">0</td>
+<td align="center">some college</td>
+<td align="right">49000</td>
+</tr>
+</tbody>
+</table>
 </div><div class="section slide level2" id="mean-median-mode-continued-1">
 <h1>Mean, Median, Mode (continued)</h1>
-<p>Example table imputed with mean, median, and mode</p>
+<p>Suppose we want to mine sales records to see what kind of customer buys more from us.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="right">sales</th>
+<th align="center">female</th>
+<th align="center">education</th>
+<th align="right">income</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1209</td>
+<td align="center">0</td>
+<td align="center">high school</td>
+<td align="right">35000</td>
+</tr>
+<tr class="even">
+<td align="right">2587</td>
+<td align="center">0</td>
+<td align="center">4yr degree</td>
+<td align="right">45000</td>
+</tr>
+<tr class="odd">
+<td align="right">13265</td>
+<td align="center">1</td>
+<td align="center">some college</td>
+<td align="right">65000</td>
+</tr>
+<tr class="even">
+<td align="right">5687</td>
+<td align="center">0</td>
+<td align="center">some college</td>
+<td align="right">49000</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th align="right">mean</th>
+<th align="right">mode</th>
+<th align="right">median</th>
+<th align="left"></th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
 </div><div class="section slide level2" id="mean-median-mode-continued-2">
 <h1>Mean, Median, Mode (continued)</h1>
 <ul class="incremental">
@@ -385,29 +526,127 @@ Stephen Haptonstahl<br/>Berico Technologies
 </ul></li>
 <li>Cons
 <ul class="incremental">
-<li>We can do better</li>
-<li>“Making up data” makes us more certain than we should be</li>
+<li>We can do better.</li>
+<li>“Making up data” makes us more certain than we should be.</li>
 </ul></li>
 </ul>
 </div>
-<div class="section titleslide slide level1" id="home-rolled-imputation"><h1>Home-Rolled Imputation</h1></div><div class="section slide level2" id="imputation-via-regression">
-<h1>Imputation Via Regression</h1>
+<div class="section titleslide slide level1" id="home-rolled-imputation"><h1>Home-Rolled Imputation</h1></div><div class="section slide level2" id="imputation-with-regression">
+<h1>Imputation with Regression</h1>
 <ol class="incremental" style="list-style-type: decimal">
 <li>Identify a cell <tt>X[i,j]</tt> to impute.</li>
 <li>Find all rows <code>prediction.rows</code> that:
-<ol class="incremental" style="list-style-type: decimal">
+<ol class="incremental" style="list-style-type: lower-alpha">
 <li>have an observed value for column <tt>j</tt></li>
 <li>have observed values for all other columns <tt>obs.cols</tt> that row <tt>i</tt> has</li>
 </ol></li>
 <li>Using those rows: <tt>reg &lt;- lm(X[prediction.rows,j] ~ X[prediction.rows,obs.cols])</tt></li>
 <li>Fill with <tt>predict(reg, names(X)[obs.cols]=X[i,obs.cols])</tt></li>
 </ol>
-</div><div class="section slide level2" id="imputation-with-regression-example">
-<h1>Imputation with Regression Example</h1>
-<p>Data set with missing continuous values</p>
-</div><div class="section slide level2" id="imputation-with-regression-example-1">
-<h1>Imputation with Regression Example</h1>
-<p>Same data set with missing continuous values filled via linear regression. Note that the values filled in are not all the same.</p>
+</div><div class="section slide level2" id="imputation-with-regression-continued">
+<h1>Imputation with Regression (continued)</h1>
+<table>
+<thead>
+<tr class="header">
+<th align="right">y</th>
+<th align="left"> </th>
+<th align="right">x1</th>
+<th align="right">x2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">7.44</td>
+<td align="left"></td>
+<td align="right">1.21</td>
+<td align="right">1.95</td>
+</tr>
+<tr class="even">
+<td align="right">3.25</td>
+<td align="left"></td>
+<td align="right">-1.35</td>
+<td align="right">0.11</td>
+</tr>
+<tr class="odd">
+<td align="right">3.90</td>
+<td align="left"></td>
+<td align="right">NA</td>
+<td align="right">0.63</td>
+</tr>
+<tr class="even">
+<td align="right">5.19</td>
+<td align="left"></td>
+<td align="right">0.16</td>
+<td align="right">2.27</td>
+</tr>
+<tr class="odd">
+<td align="right">5.57</td>
+<td align="left"></td>
+<td align="right">0.17</td>
+<td align="right">1.53</td>
+</tr>
+<tr class="even">
+<td align="right">…</td>
+<td align="left"></td>
+<td align="right">…</td>
+<td align="right">…</td>
+</tr>
+</tbody>
+</table>
+</div><div class="section slide level2" id="imputation-with-regression-continued-1">
+<h1>Imputation with Regression (continued)</h1>
+<table>
+<thead>
+<tr class="header">
+<th align="right">y</th>
+<th align="left"> </th>
+<th align="right">x1</th>
+<th align="right">x2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">7.44</td>
+<td align="left"></td>
+<td align="right">1.21</td>
+<td align="right">1.95</td>
+</tr>
+<tr class="even">
+<td align="right">3.25</td>
+<td align="left"></td>
+<td align="right">-1.35</td>
+<td align="right">0.11</td>
+</tr>
+<tr class="odd">
+<td align="right">3.90</td>
+<td align="left"></td>
+<td align="right">-0.89</td>
+<td align="right">0.63</td>
+</tr>
+<tr class="even">
+<td align="right">5.19</td>
+<td align="left"></td>
+<td align="right">0.16</td>
+<td align="right">2.27</td>
+</tr>
+<tr class="odd">
+<td align="right">5.57</td>
+<td align="left"></td>
+<td align="right">0.17</td>
+<td align="right">1.53</td>
+</tr>
+<tr class="even">
+<td align="right">…</td>
+<td align="left"></td>
+<td align="right">…</td>
+<td align="right">…</td>
+</tr>
+</tbody>
+</table>
+<ul class="incremental">
+<li>Missing value: -0.89</li>
+<li>Predicted value: -0.89</li>
+</ul>
 </div><div class="section slide level2" id="type-of-regression-varies-by-variable-type">
 <h1>Type of Regression Varies by Variable Type</h1>
 <dl class="incremental">
@@ -427,13 +666,15 @@ Stephen Haptonstahl<br/>Berico Technologies
 </div><div class="section slide level2" id="safety-first">
 <h1>Safety First!</h1>
 <ul class="incremental">
-<li>Look out for having too little data to estimate (default to mean/median/mode?)</li>
-<li>Still have problem that “Making up data” makes us more certain than we should be</li>
+<li>Look out for having too little data to estimate. (Default to mean/median/mode?)</li>
+<li>Data is dirty in other ways (illegal values).</li>
+<li>Iterative algorithms sometimes don’t converge.</li>
+<li>Still have problem that “Making up data” makes us more certain than we should be.</li>
 </ul>
 </div>
 <div class="section titleslide slide level1" id="existing-tools"><h1>Existing Tools</h1></div><div class="section slide level2" id="small-data-sets">
 <h1>Small Data Sets</h1>
-<p><tt>Amelia</tt>, <tt>mi</tt> work differently from home-rolled solutions</p>
+<p><tt>Amelia</tt> (King) and <tt>mi</tt> (Gelman) work differently from home-rolled solutions.</p>
 <p>Multiple Imputation</p>
 <ol class="incremental" style="list-style-type: decimal">
 <li>Generate <span class="LaTeX">$m$</span> copies of the data set, each with <strong>different</strong> imputed values.</li>
@@ -464,7 +705,7 @@ Stephen Haptonstahl<br/>Berico Technologies
 a.out &lt;- <span class="kw">amelia</span>(<span class="dt">x =</span> africa, <span class="dt">cs =</span> <span class="st">&quot;country&quot;</span>, <span class="dt">ts =</span> <span class="st">&quot;year&quot;</span>, <span class="dt">logs =</span> <span class="st">&quot;gdp_pc&quot;</span>)</code></pre>
 <pre><code>## -- Imputation 1 --
 ## 
-##  1  2 
+##  1  2  3 
 ## 
 ## -- Imputation 2 --
 ## 
@@ -472,7 +713,7 @@ a.out &lt;- <span class="kw">amelia</span>(<span class="dt">x =</span> africa, <
 ## 
 ## -- Imputation 3 --
 ## 
-##  1  2 
+##  1  2  3 
 ## 
 ## -- Imputation 4 --
 ## 
@@ -482,6 +723,8 @@ a.out &lt;- <span class="kw">amelia</span>(<span class="dt">x =</span> africa, <
 ## 
 ##  1  2  3 
 ## </code></pre>
+</div><div class="section slide level2" id="amelia-example-continued">
+<h1>Amelia Example (continued)</h1>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(a.out)</code></pre>
 <pre><code>## 
 ## Amelia output with 5 imputed datasets.
@@ -490,9 +733,9 @@ a.out &lt;- <span class="kw">amelia</span>(<span class="dt">x =</span> africa, <
 ## 
 ## Chain Lengths:
 ## --------------
-## Imputation 1:  2
+## Imputation 1:  3
 ## Imputation 2:  3
-## Imputation 3:  2
+## Imputation 3:  3
 ## Imputation 4:  3
 ## Imputation 5:  3
 ## 
@@ -512,9 +755,11 @@ a.out &lt;- <span class="kw">amelia</span>(<span class="dt">x =</span> africa, <
 ## civlib              0.00000
 ## population          0.00000
 ## </code></pre>
+</div><div class="section slide level2" id="amelia-example-continued-1">
+<h1>Amelia Example (continued)</h1>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(a.out)</code></pre>
 <div class="figure">
-<img src="figure/Amelia.png" alt="plot of chunk Amelia" /><p class="caption">plot of chunk Amelia</p>
+<img src="figure/Amelia3.png" alt="plot of chunk Amelia3" /><p class="caption">plot of chunk Amelia3</p>
 </div>
 </div><div class="section slide level2" id="thats-hard.-what-have-we-gained-or-lost">
 <h1>That’s hard. What have we gained or lost?</h1>
@@ -529,26 +774,29 @@ a.out &lt;- <span class="kw">amelia</span>(<span class="dt">x =</span> africa, <
 </ul></li>
 <li>If you are <strong>not</strong> implementing in <tt>R</tt>, you have a lot more work
 <ul class="incremental">
-<li>Reading the papers, implementing your own version</li>
+<li>Reading the paper(s), implementing your own version</li>
 <li>Quite do-able, not for faint at heart</li>
 </ul></li>
 <li>Not scalable</li>
 </ul>
 </div><div class="section slide level2" id="large-data-sets-bayes">
 <h1>Large Data Sets: Bayes</h1>
-<dl class="incremental">
-<dt>Bayesian data augmentation</dt>
-<dd>When using Bayes to estimate a model, put a prior on the <em>data</em> and the algorithm will give draws from the posterior distribution of the missing values
-</dd>
-</dl>
+<p>Bayesian data augmentation</p>
+<ul class="incremental">
+<li>When using Bayes to estimate a model, put a prior on the <em>data</em>.</li>
+<li>The algorithm will give draws from the posterior distribution of the missing values.</li>
+<li>It uses the model defined (whatever it is) to impute.</li>
+</ul>
+</div><div class="section slide level2" id="large-data-sets-bayes-continued">
+<h1>Large Data Sets: Bayes (continued)</h1>
+<p>Problems</p>
 <ul class="incremental">
 <li>Slow</li>
 <li>Convergence can be tricky</li>
-<li>Expertise required for custom samplers</li>
-<li>Libraries for implementing custom solutions: <tt>rcppbugs</tt> in R, others for C++, Python, etc.</li>
+<li>Expertise required for custom samplers, but libraries for implementing custom solutions: <tt>rcppbugs</tt> in R, others for C++, Python, etc.</li>
 </ul>
-</div><div class="section slide level2" id="bayes-continued">
-<h1>Bayes (continued)</h1>
+</div><div class="section slide level2" id="large-data-sets-bayes-continued-1">
+<h1>Large Data Sets: Bayes (continued)</h1>
 <p>Example: Using Bayes for IRT on network links to generate DILS (data-informed link strength)</p>
 <table>
 <thead>
@@ -605,8 +853,8 @@ a.out &lt;- <span class="kw">amelia</span>(<span class="dt">x =</span> africa, <
 </tbody>
 </table>
 <p>becomes…</p>
-</div><div class="section slide level2" id="bayes-continued-1">
-<h1>Bayes (continued)</h1>
+</div><div class="section slide level2" id="large-data-sets-bayes-continued-2">
+<h1>Large Data Sets: Bayes (continued)</h1>
 <p>Example: Using Bayes for IRT on network links to generate DILS (data-informed link strength)</p>
 <table>
 <thead>
@@ -641,27 +889,72 @@ a.out &lt;- <span class="kw">amelia</span>(<span class="dt">x =</span> africa, <
 </div><div class="section slide level2" id="large-data-sets-random-forest-classifier">
 <h1>Large Data Sets: Random Forest Classifier</h1>
 <ul class="incremental">
-<li><tt>missForest</tt></li>
+<li>Same as the home-rolled, in a sense.</li>
+<li>Use a random forest (like <tt>missForest</tt>) to predict missing values.</li>
+<li>Keep <strong>all</strong> of the trees in the forest.</li>
+<li>Aggregate as with other simulations</li>
+</ul>
+</div><div class="section slide level2" id="large-data-sets-random-forest-classifier-continued">
+<h1>Large Data Sets: Random Forest Classifier (continued)</h1>
+<ul class="incremental">
+<li>Scales well.</li>
+<li>Forest gives us reasonable measures of uncertainty.</li>
+<li>Requires a <strong>lot</strong> of data (think non-parametric).</li>
+<li>Without care might give silly values.</li>
+<li>Still should check imputed distributions against observed distributions.</li>
 </ul>
 </div><div class="section slide level2" id="real-time-fastimputation">
-<h1>Real-Time: FastImputation</h1>
+<h1>Real-Time: <tt>FastImputation</tt></h1>
 <ul class="incremental">
+<li>Project: Improve fraud detection classifier</li>
 <li>Same model as Amelia</li>
-<li>Learns (slowly) using lots of (big?) data</li>
+<li>Learns (slowly) using lots of data</li>
+<li>Imputes a single row at a time (very, well, fast)</li>
+<li>On CRAN</li>
+<li>Caveat emptor (as with all <tt>R</tt> packages)</li>
 </ul>
-<p>*</p>
-<ol class="incremental" start="8" style="list-style-type: decimal">
-<li>Real-time imputation: FastImputation (and anything else if I can find anything)</li>
-<li>Modeling non-ignorable missingness processes</li>
-</ol>
-</div><div class="section slide level2" id="links">
-<h1>Links</h1>
+</div>
+<div class="section titleslide slide level1" id="when-imputation-fails"><h1>When Imputation Fails</h1></div><div class="section slide level2" id="to-imputate-or-not">
+<h1>To Imputate or Not?</h1>
+<ul class="incremental">
+<li>Assumptions of Imputation
+<ul class="incremental">
+<li>Data is MCAR or MAR+PD</li>
+<li>“Small” fraction of data missing
+<ul class="incremental">
+<li>&lt; 10%: usually no problem</li>
+<li>10%-20%: Be careful</li>
+<li><blockquote>
+<p>20%: There be dragons</p>
+</blockquote></li>
+</ul></li>
+</ul></li>
+<li>Always<sup>*</sup> better than row deletion</li>
+</ul>
+</div><div class="section slide level2" id="what-to-do-when-imputation-fails">
+<h1>What to Do When Imputation Fails</h1>
+<ul class="incremental">
+<li>Explicitly model the reason observations are missing
+<ul class="incremental">
+<li>Tobit (incomes censored, displayed as zero)</li>
+<li>Truncated regression (heights in military)</li>
+<li>Abstentions in voting (more likely if you disagree with party)</li>
+</ul>
+<p>or</p></li>
+<li><p>Impute anyway and warn the consumer (worth considering)</p></li>
+</ul>
+</div>
+<div class="section titleslide slide level1" id="fin"><h1>Fin</h1></div><div class="section slide level2" id="links-and-contact-info">
+<h1>Links and Contact Info</h1>
 <ul class="incremental">
 <li>This presentation and code: https://github.com/shaptonstahl/MissingData_2012-08</li>
-<li><tt>Amelia</tt>: http://gking.harvard.edu/amelia</li>
+<li><tt>Amelia</tt>: http://gking.harvard.edu/amelia (the 2001 paper is a good place to start)</li>
 <li><tt>mi</tt>: http://cran.r-project.org/web/packages/mi</li>
 <li>Great ref on missing data, imputation: http://gking.harvard.edu/files/evil.pdf</li>
+<li><tt>FastImputation</tt>: http://cran.r-project.org/web/packages/FastImputation</li>
+<li>Data-Informed Link Strength (DILS): https://github.com/shaptonstahl/dils</li>
 <li>Great place to work: http://www.bericotechnologies.com</li>
+<li>Stephen Haptonstahl – srh@haptonstahl.org – @polimath</li>
 </ul>
 </div>
 </body>

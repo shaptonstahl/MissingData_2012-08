@@ -4,56 +4,68 @@
   Berico Technologies
 % 2012/08/30
 
-<!-- Compile with: pandoc -i -s -S -toc --latexmathml -t slidy -o HandlingMissingData.html HandlingMissingData.md -->
-
 # The Problem
 
 ## Data, in theory
 
-  Right     Left     Center     Default
--------     ------ ----------   -------
-     12     12        12            12
-    123     123       123          123
-      1     1          1             1
+<!-- Compile with: pandoc -i -s -S -toc --latexmathml -t slidy -o HandlingMissingData.html HandlingMissingData.md -->
 
-Table:  Made-up data
+Suppose we want to mine sales records to see what kind of customer buys more from us.
+
+ sales  female   education     income
+------ -------- -----------   -------
+  1209    0       high school 35000
+  2587    1       4yr degree   45000
+ 13265    1       grad degree  65000
+  2298    0       some college 49000
 
 ## Data, in practice
 
-  Right     Left     Center     Default
--------     ------ ----------   -------
-     12     12        12         &nbsp;
- &nbsp;     123       123          123
-      1     1         &nbsp;         1
+Suppose we want to mine sales records to see what kind of customer buys more from us.
 
-Table:  Made-up data
+ sales  female   education     income
+------ -------- -----------   -------
+  1209    0       high school  35000
+  2587    NA      4yr degree   45000
+ 13265    1       NA           65000
+    NA    0       some college 49000
 
 ## Who cares?
 
-* Best case: throwing away data
+* Best case if you ignore missing data: throwing away data
 * Same as loss of efficiency
-* Less certainty (statistical significance)
-* Some patterns will be completely missed
+* Less certainty (less statistical significance)
+* **Some patterns will be completely missed**
+* Data scientists are replaced by equally incompetent algorithms, ie. 
+* Mass hysteria
 
 ## Today's talk
 
 <!-- * [The Problem](#The-Problem) -->
 
 * The Problem
-* Problems in Handling Missing Data
+* Typical Method Versus a Better Method
 * Naive Imputation
 * Home-Rolled Imputation
-* Pre-sliced solutions
-    * Small data sets
-    * Large data sets
+* Existing Tools
+    * Small Data Sets
+    * Large Data Sets
     * Real-time
-* Modeling Nonignorable Missingness
+* When Imputation Fails
+* Fin
 
-# Problems in Handling Missing Data
+# Typical Method Versus a Better Method
 
 ## (The Evil that is) Row Deletion
 
-* bullet
+* Idea: Only include full rows in the analysis.
+* This is the most common method.
+    * Default for most software, inluding <tt>lm</tt> and other <tt>R</tt> functions.
+* Throws away data, perhaps a lot.
+      * Ex: 50 fields for each customer
+      * How many have all 50 observed? (Ans: none except test data)
+* **Some patterns will be completely missed**
+* We know where this leads
 
 ## What is imputation?
 
@@ -61,27 +73,68 @@ Imputation
 
 :    Filling in missing data with guesses, good or bad, for what would have been observed.
 
+* Example 1: "These scientists all say the earth is warming, but today it's cold.  They must be in a conspiracy!"
+* Example 2: "These scientists all say the earth is warming, but today it's cold.  Perhaps they only measured on warm days."
+* Both are wrong, but one is a better (more likely to be true) guess than the other.
+* The better guess will be less likely to lead you to bad decisions, algorithms, hysteria, etc.
+
 ## When is imputation bad
 
-* Missingness process not ignorable
-* Missingness depends on unobserved data
-* Get into MCAR, MAR, Rubin
-
 > If only we knew what was there.  Then we would be able to make a good guess at what was there.
+
+* Missingness process **not ignorable**, which means
+* Missingness depends on unobserved data
+* Types of data-generating processes
+    1. Missing Completely At Random (MCAR): *no data* will help you predict which values are missing
+        * Random noise
+    2. Missing at Random (MAR): *observed values* can help you predict which values are missing
+        * Faulty switches
+    3. Not ignorable (NMAR): *unobserved values* can help you predict which values are missing
+        * Losses reported as zero income (censored)
+* Imputing when missingness is not ignorable leads to bias, bad decisions, etc.
+* cf. Donald Rubin (1976)
 
 # Naive Imputation
 
 ## Mean, Median, Mode
 
-* Be specific on what kinds of variables each can summarize (categorical, ordinal, continuous)
+> We just filled in the missing values with zero.
+
+How we guess (hopefully) depends on what we expect to be there.
+
+* Continuous variable
+    * floating point
+    * Use <tt>mean</tt>
+* Ordinal (disagree, neither agree nor disagree, agree): <tt>median</tt>
+* Count (or other integer): <tt>median</tt>
+* Categorical (states; colors): mode
+    
+    <tt>StatMode <- function(x) names(table(x))[which.max(table(x))]</tt>
 
 ## Mean, Median, Mode (continued)
 
-Example table with missing values
+Suppose we want to mine sales records to see what kind of customer buys more from us.
+
+ sales  female   education     income
+------ -------- -----------   -------
+  1209    0       high school  35000
+  2587    NA      4yr degree   45000
+ 13265    1       NA           65000
+    NA    0       some college 49000
 
 ## Mean, Median, Mode (continued)
 
-Example table imputed with mean, median, and mode
+Suppose we want to mine sales records to see what kind of customer buys more from us.
+
+ sales  female   education               income
+------ -------- -----------             -------
+  1209       0       high school          35000
+  2587       0       4yr degree           45000
+ 13265       1       some college         65000
+  5687       0       some college         49000
+  
+  mean     mode      median
+------ -------- -----------             -------
 
 ## Mean, Median, Mode (continued)
 
@@ -91,28 +144,46 @@ Example table imputed with mean, median, and mode
     * Better than throwing away data
     * Tends to work
 * Cons
-    * We can do better
-    * "Making up data" makes us more certain than we should be
+    * We can do better.
+    * "Making up data" makes us more certain than we should be.
 
 # Home-Rolled Imputation
 
-## Imputation Via Regression
+## Imputation with Regression
 
 1. Identify a cell <tt>X[i,j]</tt> to impute.
 2. Find all rows `prediction.rows` that:
-    1. have an observed value for column <tt>j</tt>
-    2. have observed values for all other columns <tt>obs.cols</tt> that row <tt>i</tt> has
+    a. have an observed value for column <tt>j</tt>
+    b. have observed values for all other columns <tt>obs.cols</tt> that row <tt>i</tt> has
 3. Using those rows: <tt>reg <- lm(X[prediction.rows,j] ~ X[prediction.rows,obs.cols])</tt>
 4. Fill with <tt>predict(reg, names(X)[obs.cols]=X[i,obs.cols])</tt>
 
-## Imputation with Regression Example
+## Imputation with Regression (continued)
 
-Data set with missing continuous values
+     y   &nbsp;     x1     x2
+ -----   ------  -----  -----
+  7.44            1.21   1.95
+  3.25           -1.35   0.11
+  3.90              NA   0.63
+  5.19            0.16   2.27
+  5.57            0.17   1.53
+  ...              ...    ...
+ -----   ------  -----  -----
+ 
+## Imputation with Regression (continued)
 
-## Imputation with Regression Example
-
-Same data set with missing continuous values filled via linear regression.
-Note that the values filled in are not all the same.
+     y   &nbsp;     x1     x2
+ -----   ------  -----  -----
+  7.44            1.21   1.95
+  3.25           -1.35   0.11
+  3.90           -0.89   0.63
+  5.19            0.16   2.27
+  5.57            0.17   1.53
+  ...              ...    ...
+ -----   ------  -----  -----
+ 
+* Missing value: -0.89
+* Predicted value: -0.89
 
 ## Type of Regression Varies by Variable Type
 
@@ -134,14 +205,16 @@ Categorical
 
 ## Safety First!
 
-* Look out for having too little data to estimate (default to mean/median/mode?)
-* Still have problem that "Making up data" makes us more certain than we should be
+* Look out for having too little data to estimate. (Default to mean/median/mode?)
+* Data is dirty in other ways (illegal values).
+* Iterative algorithms sometimes don't converge.
+* Still have problem that "Making up data" makes us more certain than we should be.
 
 # Existing Tools
 
 ## Small Data Sets
 
-<tt>Amelia</tt>, <tt>mi</tt> work differently from home-rolled solutions
+<tt>Amelia</tt> (King) and <tt>mi</tt> (Gelman) work differently from home-rolled solutions.
 
 Multiple Imputation
 
@@ -182,7 +255,7 @@ a.out <- amelia(x = africa, cs = "country", ts = "year", logs = "gdp_pc")
 ```
 ## -- Imputation 1 --
 ## 
-##  1  2 
+##  1  2  3 
 ## 
 ## -- Imputation 2 --
 ## 
@@ -190,7 +263,7 @@ a.out <- amelia(x = africa, cs = "country", ts = "year", logs = "gdp_pc")
 ## 
 ## -- Imputation 3 --
 ## 
-##  1  2 
+##  1  2  3 
 ## 
 ## -- Imputation 4 --
 ## 
@@ -201,6 +274,10 @@ a.out <- amelia(x = africa, cs = "country", ts = "year", logs = "gdp_pc")
 ##  1  2  3 
 ## 
 ```
+
+
+## Amelia Example (continued)
+
 
 ```r
 summary(a.out)
@@ -214,9 +291,9 @@ summary(a.out)
 ## 
 ## Chain Lengths:
 ## --------------
-## Imputation 1:  2
+## Imputation 1:  3
 ## Imputation 2:  3
-## Imputation 3:  2
+## Imputation 3:  3
 ## Imputation 4:  3
 ## Imputation 5:  3
 ## 
@@ -238,11 +315,15 @@ summary(a.out)
 ## 
 ```
 
+
+## Amelia Example (continued)
+
+
 ```r
 plot(a.out)
 ```
 
-![plot of chunk Amelia](figure/Amelia.png) 
+![plot of chunk Amelia3](figure/Amelia3.png) 
 
 
 ## That's hard. What have we gained or lost?
@@ -254,7 +335,7 @@ plot(a.out)
     * Code is shorter if you are implementing in <tt>R</tt>
     * Very fast on reasonably sized data sets
 * If you are **not** implementing in <tt>R</tt>, you have a lot more work
-    * Reading the papers, implementing your own version
+    * Reading the paper(s), implementing your own version
     * Quite do-able, not for faint at heart
 * Not scalable
 
@@ -262,14 +343,19 @@ plot(a.out)
 
 Bayesian data augmentation
 
-:    When using Bayes to estimate a model, put a prior on the *data* and the algorithm will give draws from the posterior distribution of the missing values
+* When using Bayes to estimate a model, put a prior on the *data*.
+* The algorithm will give draws from the posterior distribution of the missing values.
+* It uses the model defined (whatever it is) to impute.
+
+## Large Data Sets: Bayes (continued)
+
+Problems 
 
 * Slow
 * Convergence can be tricky
-* Expertise required for custom samplers
-* Libraries for implementing custom solutions: <tt>rcppbugs</tt> in R, others for C++, Python, etc.
+* Expertise required for custom samplers, but libraries for implementing custom solutions: <tt>rcppbugs</tt> in R, others for C++, Python, etc.
 
-## Bayes (continued)
+## Large Data Sets: Bayes (continued)
 
 Example: Using Bayes for IRT on network links to generate DILS (data-informed link strength)
 
@@ -283,7 +369,7 @@ Example: Using Bayes for IRT on network links to generate DILS (data-informed li
 
 becomes...
 
-## Bayes (continued)
+## Large Data Sets: Bayes (continued)
 
 Example: Using Bayes for IRT on network links to generate DILS (data-informed link strength)
 
@@ -297,22 +383,60 @@ Example: Using Bayes for IRT on network links to generate DILS (data-informed li
 
 ## Large Data Sets: Random Forest Classifier
 
-* <tt>missForest</tt>
+* Same as the home-rolled, in a sense.
+* Use a random forest (like <tt>missForest</tt>) to predict missing values.
+* Keep **all** of the trees in the forest.
+* Aggregate as with other simulations
 
-## Real-Time: FastImputation
+## Large Data Sets: Random Forest Classifier (continued)
 
+* Scales well.
+* Forest gives us reasonable measures of uncertainty.
+* Requires a **lot** of data (think non-parametric).
+* Without care might give silly values.
+* Still should check imputed distributions against observed distributions.
+
+## Real-Time: <tt>FastImputation</tt>
+
+* Project: Improve fraud detection classifier
 * Same model as Amelia
-* Learns (slowly) using lots of (big?) data
-* 
+* Learns (slowly) using lots of data
+* Imputes a single row at a time (very, well, fast)
+* On CRAN
+* Caveat emptor (as with all <tt>R</tt> packages)
 
-8. Real-time imputation: FastImputation (and anything else if I can find
-anything)
-9. Modeling non-ignorable missingness processes
+# When Imputation Fails
 
-## Links
+## To Imputate or Not?
+
+* Assumptions of Imputation
+    * Data is MCAR or MAR+PD
+    * "Small" fraction of data missing
+        * < 10%: usually no problem
+        * 10%-20%: Be careful
+        * > 20%: There be dragons
+* Always^*^ better than row deletion
+
+## What to Do When Imputation Fails
+
+* Explicitly model the reason observations are missing
+    * Tobit (incomes censored, displayed as zero)
+    * Truncated regression (heights in military)
+    * Abstentions in voting (more likely if you disagree with party)
+    
+    or
+    
+* Impute anyway and warn the consumer (worth considering)
+
+# Fin
+
+## Links and Contact Info
 
 * This presentation and code: https://github.com/shaptonstahl/MissingData_2012-08
-* <tt>Amelia</tt>: http://gking.harvard.edu/amelia
+* <tt>Amelia</tt>: http://gking.harvard.edu/amelia (the 2001 paper is a good place to start)
 * <tt>mi</tt>: http://cran.r-project.org/web/packages/mi
 * Great ref on missing data, imputation: http://gking.harvard.edu/files/evil.pdf
+* <tt>FastImputation</tt>: http://cran.r-project.org/web/packages/FastImputation
+* Data-Informed Link Strength (DILS): https://github.com/shaptonstahl/dils
 * Great place to work: http://www.bericotechnologies.com
+* Stephen Haptonstahl -- srh@haptonstahl.org -- @polimath
