@@ -1,0 +1,52 @@
+% Strategies for
+  Handling Missing Data
+% Stephen Haptonstahl
+  Berico Technologies
+% 2012/08/30
+
+
+
+
+# This is a section title
+
+## This is a slide title
+
+* This is a bullet, or so I think
+* This is another
+    * This is a subbullet
+    * ...and another
+* So how's that?
+
+## This is the second slide
+
+- This is a bit too easy
+- Nice!
+
+# Now for another section
+
+## Slide $k$
+
+- This
+- Is
+- A
+- Slide
+
+## Slide $k+1$
+
+- We're trying some math $\int_0^1 x^2 dx$ just for fun
+
+1. (The evils of) Row-deletion
+2. What is imputation?
+3. MAR, MCAR, non-ignorable missing data, and exploring missing data
+(MissingDataGUI?)
+4. Naive imputation (filling with mean/median/mode) and problems with
+naive approaches (we can choose better points; single imputed values =>
+underestimates of SEs/posterior variances)
+5. Home-rolled pointwise imputation using linear regression, probit, polr,
+nnet, etc.
+6. Small data sets: Amelia, mi, and the like
+7. Large data sets: Bayesian data augmentation, random forest classifiers
+(missForest), other scalable methods
+8. Real-time imputation: FastImputation (and anything else if I can find
+anything)
+9. Modeling non-ignorable missingness processes
