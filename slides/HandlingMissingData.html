@@ -1,348 +1,257 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
- "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0014)about:internet -->
+<html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="generator" content="pandoc" />
-  <meta name="author" content="Stephen Haptonstahl" />
-  <meta name="author" content="Berico Technologies" />
-  <title>Strategies for Handling Missing Data</title>
-  <style type="text/css">
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; }
-code > span.dt { color: #902000; }
-code > span.dv { color: #40a070; }
-code > span.bn { color: #40a070; }
-code > span.fl { color: #40a070; }
-code > span.ch { color: #4070a0; }
-code > span.st { color: #4070a0; }
-code > span.co { color: #60a0b0; font-style: italic; }
-code > span.ot { color: #007020; }
-code > span.al { color: #ff0000; font-weight: bold; }
-code > span.fu { color: #06287e; }
-code > span.er { color: #ff0000; font-weight: bold; }
-  </style>
-  <link rel="stylesheet" type="text/css" media="screen, projection, print"
-    href="http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css" />
-  <script type="text/javascript">/*<![CDATA[*/
-  /*
-  LaTeXMathML.js from http://math.etsu.edu/LaTeXMathML/
-  Adapted by Jeff Knisely and Douglas Woodall from ASCIIMathML.js v. 1.4.7,
-  (c) 2005 Peter Jipsen http://www.chapman.edu/~jipsen.
-  Released under the GNU General Public License version 2 or later.
-  See the GNU General Public License (at http://www.gnu.org/copyleft/gpl.html)
-  for more details.
-  */
-  var checkForMathML=true;var notifyIfNoMathML=true;var alertIfNoMathML=false;var mathcolor="";var mathfontfamily="";var showasciiformulaonhover=true;var isIE=document.createElementNS==null;if(document.getElementById==null)
-  alert("This webpage requires a recent browser such as \nMozilla/Netscape 7+ or Internet Explorer 6+MathPlayer")
-  function AMcreateElementXHTML(t){if(isIE)return document.createElement(t);else return document.createElementNS("http://www.w3.org/1999/xhtml",t);}
-  function AMnoMathMLNote(){var nd=AMcreateElementXHTML("h3");nd.setAttribute("align","center")
-  nd.appendChild(AMcreateElementXHTML("p"));nd.appendChild(document.createTextNode("To view the "));var an=AMcreateElementXHTML("a");an.appendChild(document.createTextNode("LaTeXMathML"));an.setAttribute("href","http://www.maths.nott.ac.uk/personal/drw/lm.html");nd.appendChild(an);nd.appendChild(document.createTextNode(" notation use Internet Explorer 6+"));an=AMcreateElementXHTML("a");an.appendChild(document.createTextNode("MathPlayer"));an.setAttribute("href","http://www.dessci.com/en/products/mathplayer/download.htm");nd.appendChild(an);nd.appendChild(document.createTextNode(" or Netscape/Mozilla/Firefox"));nd.appendChild(AMcreateElementXHTML("p"));return nd;}
-  function AMisMathMLavailable(){if(navigator.appName.slice(0,8)=="Netscape")
-  if(navigator.appVersion.slice(0,1)>="5")return null;else return AMnoMathMLNote();else if(navigator.appName.slice(0,9)=="Microsoft")
-  try{var ActiveX=new ActiveXObject("MathPlayer.Factory.1");return null;}catch(e){return AMnoMathMLNote();}
-  else return AMnoMathMLNote();}
-  var AMcal=[0xEF35,0x212C,0xEF36,0xEF37,0x2130,0x2131,0xEF38,0x210B,0x2110,0xEF39,0xEF3A,0x2112,0x2133,0xEF3B,0xEF3C,0xEF3D,0xEF3E,0x211B,0xEF3F,0xEF40,0xEF41,0xEF42,0xEF43,0xEF44,0xEF45,0xEF46];var AMfrk=[0xEF5D,0xEF5E,0x212D,0xEF5F,0xEF60,0xEF61,0xEF62,0x210C,0x2111,0xEF63,0xEF64,0xEF65,0xEF66,0xEF67,0xEF68,0xEF69,0xEF6A,0x211C,0xEF6B,0xEF6C,0xEF6D,0xEF6E,0xEF6F,0xEF70,0xEF71,0x2128];var AMbbb=[0xEF8C,0xEF8D,0x2102,0xEF8E,0xEF8F,0xEF90,0xEF91,0x210D,0xEF92,0xEF93,0xEF94,0xEF95,0xEF96,0x2115,0xEF97,0x2119,0x211A,0x211D,0xEF98,0xEF99,0xEF9A,0xEF9B,0xEF9C,0xEF9D,0xEF9E,0x2124];var CONST=0,UNARY=1,BINARY=2,INFIX=3,LEFTBRACKET=4,RIGHTBRACKET=5,SPACE=6,UNDEROVER=7,DEFINITION=8,TEXT=9,BIG=10,LONG=11,STRETCHY=12,MATRIX=13;var AMsqrt={input:"\\sqrt",tag:"msqrt",output:"sqrt",ttype:UNARY},AMroot={input:"\\root",tag:"mroot",output:"root",ttype:BINARY},AMfrac={input:"\\frac",tag:"mfrac",output:"/",ttype:BINARY},AMover={input:"\\stackrel",tag:"mover",output:"stackrel",ttype:BINARY},AMatop={input:"\\atop",tag:"mfrac",output:"",ttype:INFIX},AMchoose={input:"\\choose",tag:"mfrac",output:"",ttype:INFIX},AMsub={input:"_",tag:"msub",output:"_",ttype:INFIX},AMsup={input:"^",tag:"msup",output:"^",ttype:INFIX},AMtext={input:"\\mathrm",tag:"mtext",output:"text",ttype:TEXT},AMmbox={input:"\\mbox",tag:"mtext",output:"mbox",ttype:TEXT};var AMsymbols=[{input:"\\alpha",tag:"mi",output:"\u03B1",ttype:CONST},{input:"\\beta",tag:"mi",output:"\u03B2",ttype:CONST},{input:"\\gamma",tag:"mi",output:"\u03B3",ttype:CONST},{input:"\\delta",tag:"mi",output:"\u03B4",ttype:CONST},{input:"\\epsilon",tag:"mi",output:"\u03B5",ttype:CONST},{input:"\\varepsilon",tag:"mi",output:"\u025B",ttype:CONST},{input:"\\zeta",tag:"mi",output:"\u03B6",ttype:CONST},{input:"\\eta",tag:"mi",output:"\u03B7",ttype:CONST},{input:"\\theta",tag:"mi",output:"\u03B8",ttype:CONST},{input:"\\vartheta",tag:"mi",output:"\u03D1",ttype:CONST},{input:"\\iota",tag:"mi",output:"\u03B9",ttype:CONST},{input:"\\kappa",tag:"mi",output:"\u03BA",ttype:CONST},{input:"\\lambda",tag:"mi",output:"\u03BB",ttype:CONST},{input:"\\mu",tag:"mi",output:"\u03BC",ttype:CONST},{input:"\\nu",tag:"mi",output:"\u03BD",ttype:CONST},{input:"\\xi",tag:"mi",output:"\u03BE",ttype:CONST},{input:"\\pi",tag:"mi",output:"\u03C0",ttype:CONST},{input:"\\varpi",tag:"mi",output:"\u03D6",ttype:CONST},{input:"\\rho",tag:"mi",output:"\u03C1",ttype:CONST},{input:"\\varrho",tag:"mi",output:"\u03F1",ttype:CONST},{input:"\\varsigma",tag:"mi",output:"\u03C2",ttype:CONST},{input:"\\sigma",tag:"mi",output:"\u03C3",ttype:CONST},{input:"\\tau",tag:"mi",output:"\u03C4",ttype:CONST},{input:"\\upsilon",tag:"mi",output:"\u03C5",ttype:CONST},{input:"\\phi",tag:"mi",output:"\u03C6",ttype:CONST},{input:"\\varphi",tag:"mi",output:"\u03D5",ttype:CONST},{input:"\\chi",tag:"mi",output:"\u03C7",ttype:CONST},{input:"\\psi",tag:"mi",output:"\u03C8",ttype:CONST},{input:"\\omega",tag:"mi",output:"\u03C9",ttype:CONST},{input:"\\Gamma",tag:"mo",output:"\u0393",ttype:CONST},{input:"\\Delta",tag:"mo",output:"\u0394",ttype:CONST},{input:"\\Theta",tag:"mo",output:"\u0398",ttype:CONST},{input:"\\Lambda",tag:"mo",output:"\u039B",ttype:CONST},{input:"\\Xi",tag:"mo",output:"\u039E",ttype:CONST},{input:"\\Pi",tag:"mo",output:"\u03A0",ttype:CONST},{input:"\\Sigma",tag:"mo",output:"\u03A3",ttype:CONST},{input:"\\Upsilon",tag:"mo",output:"\u03A5",ttype:CONST},{input:"\\Phi",tag:"mo",output:"\u03A6",ttype:CONST},{input:"\\Psi",tag:"mo",output:"\u03A8",ttype:CONST},{input:"\\Omega",tag:"mo",output:"\u03A9",ttype:CONST},{input:"\\frac12",tag:"mo",output:"\u00BD",ttype:CONST},{input:"\\frac14",tag:"mo",output:"\u00BC",ttype:CONST},{input:"\\frac34",tag:"mo",output:"\u00BE",ttype:CONST},{input:"\\frac13",tag:"mo",output:"\u2153",ttype:CONST},{input:"\\frac23",tag:"mo",output:"\u2154",ttype:CONST},{input:"\\frac15",tag:"mo",output:"\u2155",ttype:CONST},{input:"\\frac25",tag:"mo",output:"\u2156",ttype:CONST},{input:"\\frac35",tag:"mo",output:"\u2157",ttype:CONST},{input:"\\frac45",tag:"mo",output:"\u2158",ttype:CONST},{input:"\\frac16",tag:"mo",output:"\u2159",ttype:CONST},{input:"\\frac56",tag:"mo",output:"\u215A",ttype:CONST},{input:"\\frac18",tag:"mo",output:"\u215B",ttype:CONST},{input:"\\frac38",tag:"mo",output:"\u215C",ttype:CONST},{input:"\\frac58",tag:"mo",output:"\u215D",ttype:CONST},{input:"\\frac78",tag:"mo",output:"\u215E",ttype:CONST},{input:"\\pm",tag:"mo",output:"\u00B1",ttype:CONST},{input:"\\mp",tag:"mo",output:"\u2213",ttype:CONST},{input:"\\triangleleft",tag:"mo",output:"\u22B2",ttype:CONST},{input:"\\triangleright",tag:"mo",output:"\u22B3",ttype:CONST},{input:"\\cdot",tag:"mo",output:"\u22C5",ttype:CONST},{input:"\\star",tag:"mo",output:"\u22C6",ttype:CONST},{input:"\\ast",tag:"mo",output:"\u002A",ttype:CONST},{input:"\\times",tag:"mo",output:"\u00D7",ttype:CONST},{input:"\\div",tag:"mo",output:"\u00F7",ttype:CONST},{input:"\\circ",tag:"mo",output:"\u2218",ttype:CONST},{input:"\\bullet",tag:"mo",output:"\u2022",ttype:CONST},{input:"\\oplus",tag:"mo",output:"\u2295",ttype:CONST},{input:"\\ominus",tag:"mo",output:"\u2296",ttype:CONST},{input:"\\otimes",tag:"mo",output:"\u2297",ttype:CONST},{input:"\\bigcirc",tag:"mo",output:"\u25CB",ttype:CONST},{input:"\\oslash",tag:"mo",output:"\u2298",ttype:CONST},{input:"\\odot",tag:"mo",output:"\u2299",ttype:CONST},{input:"\\land",tag:"mo",output:"\u2227",ttype:CONST},{input:"\\wedge",tag:"mo",output:"\u2227",ttype:CONST},{input:"\\lor",tag:"mo",output:"\u2228",ttype:CONST},{input:"\\vee",tag:"mo",output:"\u2228",ttype:CONST},{input:"\\cap",tag:"mo",output:"\u2229",ttype:CONST},{input:"\\cup",tag:"mo",output:"\u222A",ttype:CONST},{input:"\\sqcap",tag:"mo",output:"\u2293",ttype:CONST},{input:"\\sqcup",tag:"mo",output:"\u2294",ttype:CONST},{input:"\\uplus",tag:"mo",output:"\u228E",ttype:CONST},{input:"\\amalg",tag:"mo",output:"\u2210",ttype:CONST},{input:"\\bigtriangleup",tag:"mo",output:"\u25B3",ttype:CONST},{input:"\\bigtriangledown",tag:"mo",output:"\u25BD",ttype:CONST},{input:"\\dag",tag:"mo",output:"\u2020",ttype:CONST},{input:"\\dagger",tag:"mo",output:"\u2020",ttype:CONST},{input:"\\ddag",tag:"mo",output:"\u2021",ttype:CONST},{input:"\\ddagger",tag:"mo",output:"\u2021",ttype:CONST},{input:"\\lhd",tag:"mo",output:"\u22B2",ttype:CONST},{input:"\\rhd",tag:"mo",output:"\u22B3",ttype:CONST},{input:"\\unlhd",tag:"mo",output:"\u22B4",ttype:CONST},{input:"\\unrhd",tag:"mo",output:"\u22B5",ttype:CONST},{input:"\\sum",tag:"mo",output:"\u2211",ttype:UNDEROVER},{input:"\\prod",tag:"mo",output:"\u220F",ttype:UNDEROVER},{input:"\\bigcap",tag:"mo",output:"\u22C2",ttype:UNDEROVER},{input:"\\bigcup",tag:"mo",output:"\u22C3",ttype:UNDEROVER},{input:"\\bigwedge",tag:"mo",output:"\u22C0",ttype:UNDEROVER},{input:"\\bigvee",tag:"mo",output:"\u22C1",ttype:UNDEROVER},{input:"\\bigsqcap",tag:"mo",output:"\u2A05",ttype:UNDEROVER},{input:"\\bigsqcup",tag:"mo",output:"\u2A06",ttype:UNDEROVER},{input:"\\coprod",tag:"mo",output:"\u2210",ttype:UNDEROVER},{input:"\\bigoplus",tag:"mo",output:"\u2A01",ttype:UNDEROVER},{input:"\\bigotimes",tag:"mo",output:"\u2A02",ttype:UNDEROVER},{input:"\\bigodot",tag:"mo",output:"\u2A00",ttype:UNDEROVER},{input:"\\biguplus",tag:"mo",output:"\u2A04",ttype:UNDEROVER},{input:"\\int",tag:"mo",output:"\u222B",ttype:CONST},{input:"\\oint",tag:"mo",output:"\u222E",ttype:CONST},{input:":=",tag:"mo",output:":=",ttype:CONST},{input:"\\lt",tag:"mo",output:"<",ttype:CONST},{input:"\\gt",tag:"mo",output:">",ttype:CONST},{input:"\\ne",tag:"mo",output:"\u2260",ttype:CONST},{input:"\\neq",tag:"mo",output:"\u2260",ttype:CONST},{input:"\\le",tag:"mo",output:"\u2264",ttype:CONST},{input:"\\leq",tag:"mo",output:"\u2264",ttype:CONST},{input:"\\leqslant",tag:"mo",output:"\u2264",ttype:CONST},{input:"\\ge",tag:"mo",output:"\u2265",ttype:CONST},{input:"\\geq",tag:"mo",output:"\u2265",ttype:CONST},{input:"\\geqslant",tag:"mo",output:"\u2265",ttype:CONST},{input:"\\equiv",tag:"mo",output:"\u2261",ttype:CONST},{input:"\\ll",tag:"mo",output:"\u226A",ttype:CONST},{input:"\\gg",tag:"mo",output:"\u226B",ttype:CONST},{input:"\\doteq",tag:"mo",output:"\u2250",ttype:CONST},{input:"\\prec",tag:"mo",output:"\u227A",ttype:CONST},{input:"\\succ",tag:"mo",output:"\u227B",ttype:CONST},{input:"\\preceq",tag:"mo",output:"\u227C",ttype:CONST},{input:"\\succeq",tag:"mo",output:"\u227D",ttype:CONST},{input:"\\subset",tag:"mo",output:"\u2282",ttype:CONST},{input:"\\supset",tag:"mo",output:"\u2283",ttype:CONST},{input:"\\subseteq",tag:"mo",output:"\u2286",ttype:CONST},{input:"\\supseteq",tag:"mo",output:"\u2287",ttype:CONST},{input:"\\sqsubset",tag:"mo",output:"\u228F",ttype:CONST},{input:"\\sqsupset",tag:"mo",output:"\u2290",ttype:CONST},{input:"\\sqsubseteq",tag:"mo",output:"\u2291",ttype:CONST},{input:"\\sqsupseteq",tag:"mo",output:"\u2292",ttype:CONST},{input:"\\sim",tag:"mo",output:"\u223C",ttype:CONST},{input:"\\simeq",tag:"mo",output:"\u2243",ttype:CONST},{input:"\\approx",tag:"mo",output:"\u2248",ttype:CONST},{input:"\\cong",tag:"mo",output:"\u2245",ttype:CONST},{input:"\\Join",tag:"mo",output:"\u22C8",ttype:CONST},{input:"\\bowtie",tag:"mo",output:"\u22C8",ttype:CONST},{input:"\\in",tag:"mo",output:"\u2208",ttype:CONST},{input:"\\ni",tag:"mo",output:"\u220B",ttype:CONST},{input:"\\owns",tag:"mo",output:"\u220B",ttype:CONST},{input:"\\propto",tag:"mo",output:"\u221D",ttype:CONST},{input:"\\vdash",tag:"mo",output:"\u22A2",ttype:CONST},{input:"\\dashv",tag:"mo",output:"\u22A3",ttype:CONST},{input:"\\models",tag:"mo",output:"\u22A8",ttype:CONST},{input:"\\perp",tag:"mo",output:"\u22A5",ttype:CONST},{input:"\\smile",tag:"mo",output:"\u2323",ttype:CONST},{input:"\\frown",tag:"mo",output:"\u2322",ttype:CONST},{input:"\\asymp",tag:"mo",output:"\u224D",ttype:CONST},{input:"\\notin",tag:"mo",output:"\u2209",ttype:CONST},{input:"\\begin{eqnarray}",output:"X",ttype:MATRIX,invisible:true},{input:"\\begin{array}",output:"X",ttype:MATRIX,invisible:true},{input:"\\\\",output:"}&{",ttype:DEFINITION},{input:"\\end{eqnarray}",output:"}}",ttype:DEFINITION},{input:"\\end{array}",output:"}}",ttype:DEFINITION},{input:"\\big",tag:"mo",output:"X",atval:"1.2",ieval:"2.2",ttype:BIG},{input:"\\Big",tag:"mo",output:"X",atval:"1.6",ieval:"2.6",ttype:BIG},{input:"\\bigg",tag:"mo",output:"X",atval:"2.2",ieval:"3.2",ttype:BIG},{input:"\\Bigg",tag:"mo",output:"X",atval:"2.9",ieval:"3.9",ttype:BIG},{input:"\\left",tag:"mo",output:"X",ttype:LEFTBRACKET},{input:"\\right",tag:"mo",output:"X",ttype:RIGHTBRACKET},{input:"{",output:"{",ttype:LEFTBRACKET,invisible:true},{input:"}",output:"}",ttype:RIGHTBRACKET,invisible:true},{input:"(",tag:"mo",output:"(",atval:"1",ttype:STRETCHY},{input:"[",tag:"mo",output:"[",atval:"1",ttype:STRETCHY},{input:"\\lbrack",tag:"mo",output:"[",atval:"1",ttype:STRETCHY},{input:"\\{",tag:"mo",output:"{",atval:"1",ttype:STRETCHY},{input:"\\lbrace",tag:"mo",output:"{",atval:"1",ttype:STRETCHY},{input:"\\langle",tag:"mo",output:"\u2329",atval:"1",ttype:STRETCHY},{input:"\\lfloor",tag:"mo",output:"\u230A",atval:"1",ttype:STRETCHY},{input:"\\lceil",tag:"mo",output:"\u2308",atval:"1",ttype:STRETCHY},{input:")",tag:"mo",output:")",rtag:"mi",atval:"1",ttype:STRETCHY},{input:"]",tag:"mo",output:"]",rtag:"mi",atval:"1",ttype:STRETCHY},{input:"\\rbrack",tag:"mo",output:"]",rtag:"mi",atval:"1",ttype:STRETCHY},{input:"\\}",tag:"mo",output:"}",rtag:"mi",atval:"1",ttype:STRETCHY},{input:"\\rbrace",tag:"mo",output:"}",rtag:"mi",atval:"1",ttype:STRETCHY},{input:"\\rangle",tag:"mo",output:"\u232A",rtag:"mi",atval:"1",ttype:STRETCHY},{input:"\\rfloor",tag:"mo",output:"\u230B",rtag:"mi",atval:"1",ttype:STRETCHY},{input:"\\rceil",tag:"mo",output:"\u2309",rtag:"mi",atval:"1",ttype:STRETCHY},{input:"|",tag:"mo",output:"\u2223",atval:"1",ttype:STRETCHY},{input:"\\|",tag:"mo",output:"\u2225",atval:"1",ttype:STRETCHY},{input:"\\vert",tag:"mo",output:"\u2223",atval:"1",ttype:STRETCHY},{input:"\\Vert",tag:"mo",output:"\u2225",atval:"1",ttype:STRETCHY},{input:"\\mid",tag:"mo",output:"\u2223",atval:"1",ttype:STRETCHY},{input:"\\parallel",tag:"mo",output:"\u2225",atval:"1",ttype:STRETCHY},{input:"/",tag:"mo",output:"/",atval:"1.01",ttype:STRETCHY},{input:"\\backslash",tag:"mo",output:"\u2216",atval:"1",ttype:STRETCHY},{input:"\\setminus",tag:"mo",output:"\\",ttype:CONST},{input:"\\!",tag:"mspace",atname:"width",atval:"-0.167em",ttype:SPACE},{input:"\\,",tag:"mspace",atname:"width",atval:"0.167em",ttype:SPACE},{input:"\\>",tag:"mspace",atname:"width",atval:"0.222em",ttype:SPACE},{input:"\\:",tag:"mspace",atname:"width",atval:"0.222em",ttype:SPACE},{input:"\\;",tag:"mspace",atname:"width",atval:"0.278em",ttype:SPACE},{input:"~",tag:"mspace",atname:"width",atval:"0.333em",ttype:SPACE},{input:"\\quad",tag:"mspace",atname:"width",atval:"1em",ttype:SPACE},{input:"\\qquad",tag:"mspace",atname:"width",atval:"2em",ttype:SPACE},{input:"\\prime",tag:"mo",output:"\u2032",ttype:CONST},{input:"'",tag:"mo",output:"\u02B9",ttype:CONST},{input:"''",tag:"mo",output:"\u02BA",ttype:CONST},{input:"'''",tag:"mo",output:"\u2034",ttype:CONST},{input:"''''",tag:"mo",output:"\u2057",ttype:CONST},{input:"\\ldots",tag:"mo",output:"\u2026",ttype:CONST},{input:"\\cdots",tag:"mo",output:"\u22EF",ttype:CONST},{input:"\\vdots",tag:"mo",output:"\u22EE",ttype:CONST},{input:"\\ddots",tag:"mo",output:"\u22F1",ttype:CONST},{input:"\\forall",tag:"mo",output:"\u2200",ttype:CONST},{input:"\\exists",tag:"mo",output:"\u2203",ttype:CONST},{input:"\\Re",tag:"mo",output:"\u211C",ttype:CONST},{input:"\\Im",tag:"mo",output:"\u2111",ttype:CONST},{input:"\\aleph",tag:"mo",output:"\u2135",ttype:CONST},{input:"\\hbar",tag:"mo",output:"\u210F",ttype:CONST},{input:"\\ell",tag:"mo",output:"\u2113",ttype:CONST},{input:"\\wp",tag:"mo",output:"\u2118",ttype:CONST},{input:"\\emptyset",tag:"mo",output:"\u2205",ttype:CONST},{input:"\\infty",tag:"mo",output:"\u221E",ttype:CONST},{input:"\\surd",tag:"mo",output:"\\sqrt{}",ttype:DEFINITION},{input:"\\partial",tag:"mo",output:"\u2202",ttype:CONST},{input:"\\nabla",tag:"mo",output:"\u2207",ttype:CONST},{input:"\\triangle",tag:"mo",output:"\u25B3",ttype:CONST},{input:"\\therefore",tag:"mo",output:"\u2234",ttype:CONST},{input:"\\angle",tag:"mo",output:"\u2220",ttype:CONST},{input:"\\diamond",tag:"mo",output:"\u22C4",ttype:CONST},{input:"\\Diamond",tag:"mo",output:"\u25C7",ttype:CONST},{input:"\\neg",tag:"mo",output:"\u00AC",ttype:CONST},{input:"\\lnot",tag:"mo",output:"\u00AC",ttype:CONST},{input:"\\bot",tag:"mo",output:"\u22A5",ttype:CONST},{input:"\\top",tag:"mo",output:"\u22A4",ttype:CONST},{input:"\\square",tag:"mo",output:"\u25AB",ttype:CONST},{input:"\\Box",tag:"mo",output:"\u25A1",ttype:CONST},{input:"\\wr",tag:"mo",output:"\u2240",ttype:CONST},{input:"\\arccos",tag:"mi",output:"arccos",ttype:UNARY,func:true},{input:"\\arcsin",tag:"mi",output:"arcsin",ttype:UNARY,func:true},{input:"\\arctan",tag:"mi",output:"arctan",ttype:UNARY,func:true},{input:"\\arg",tag:"mi",output:"arg",ttype:UNARY,func:true},{input:"\\cos",tag:"mi",output:"cos",ttype:UNARY,func:true},{input:"\\cosh",tag:"mi",output:"cosh",ttype:UNARY,func:true},{input:"\\cot",tag:"mi",output:"cot",ttype:UNARY,func:true},{input:"\\coth",tag:"mi",output:"coth",ttype:UNARY,func:true},{input:"\\csc",tag:"mi",output:"csc",ttype:UNARY,func:true},{input:"\\deg",tag:"mi",output:"deg",ttype:UNARY,func:true},{input:"\\det",tag:"mi",output:"det",ttype:UNARY,func:true},{input:"\\dim",tag:"mi",output:"dim",ttype:UNARY,func:true},{input:"\\exp",tag:"mi",output:"exp",ttype:UNARY,func:true},{input:"\\gcd",tag:"mi",output:"gcd",ttype:UNARY,func:true},{input:"\\hom",tag:"mi",output:"hom",ttype:UNARY,func:true},{input:"\\inf",tag:"mo",output:"inf",ttype:UNDEROVER},{input:"\\ker",tag:"mi",output:"ker",ttype:UNARY,func:true},{input:"\\lg",tag:"mi",output:"lg",ttype:UNARY,func:true},{input:"\\lim",tag:"mo",output:"lim",ttype:UNDEROVER},{input:"\\liminf",tag:"mo",output:"liminf",ttype:UNDEROVER},{input:"\\limsup",tag:"mo",output:"limsup",ttype:UNDEROVER},{input:"\\ln",tag:"mi",output:"ln",ttype:UNARY,func:true},{input:"\\log",tag:"mi",output:"log",ttype:UNARY,func:true},{input:"\\max",tag:"mo",output:"max",ttype:UNDEROVER},{input:"\\min",tag:"mo",output:"min",ttype:UNDEROVER},{input:"\\Pr",tag:"mi",output:"Pr",ttype:UNARY,func:true},{input:"\\sec",tag:"mi",output:"sec",ttype:UNARY,func:true},{input:"\\sin",tag:"mi",output:"sin",ttype:UNARY,func:true},{input:"\\sinh",tag:"mi",output:"sinh",ttype:UNARY,func:true},{input:"\\sup",tag:"mo",output:"sup",ttype:UNDEROVER},{input:"\\tan",tag:"mi",output:"tan",ttype:UNARY,func:true},{input:"\\tanh",tag:"mi",output:"tanh",ttype:UNARY,func:true},{input:"\\gets",tag:"mo",output:"\u2190",ttype:CONST},{input:"\\leftarrow",tag:"mo",output:"\u2190",ttype:CONST},{input:"\\to",tag:"mo",output:"\u2192",ttype:CONST},{input:"\\rightarrow",tag:"mo",output:"\u2192",ttype:CONST},{input:"\\leftrightarrow",tag:"mo",output:"\u2194",ttype:CONST},{input:"\\uparrow",tag:"mo",output:"\u2191",ttype:CONST},{input:"\\downarrow",tag:"mo",output:"\u2193",ttype:CONST},{input:"\\updownarrow",tag:"mo",output:"\u2195",ttype:CONST},{input:"\\Leftarrow",tag:"mo",output:"\u21D0",ttype:CONST},{input:"\\Rightarrow",tag:"mo",output:"\u21D2",ttype:CONST},{input:"\\Leftrightarrow",tag:"mo",output:"\u21D4",ttype:CONST},{input:"\\iff",tag:"mo",output:"~\\Longleftrightarrow~",ttype:DEFINITION},{input:"\\Uparrow",tag:"mo",output:"\u21D1",ttype:CONST},{input:"\\Downarrow",tag:"mo",output:"\u21D3",ttype:CONST},{input:"\\Updownarrow",tag:"mo",output:"\u21D5",ttype:CONST},{input:"\\mapsto",tag:"mo",output:"\u21A6",ttype:CONST},{input:"\\longleftarrow",tag:"mo",output:"\u2190",ttype:LONG},{input:"\\longrightarrow",tag:"mo",output:"\u2192",ttype:LONG},{input:"\\longleftrightarrow",tag:"mo",output:"\u2194",ttype:LONG},{input:"\\Longleftarrow",tag:"mo",output:"\u21D0",ttype:LONG},{input:"\\Longrightarrow",tag:"mo",output:"\u21D2",ttype:LONG},{input:"\\Longleftrightarrow",tag:"mo",output:"\u21D4",ttype:LONG},{input:"\\longmapsto",tag:"mo",output:"\u21A6",ttype:CONST},AMsqrt,AMroot,AMfrac,AMover,AMsub,AMsup,AMtext,AMmbox,AMatop,AMchoose,{input:"\\acute",tag:"mover",output:"\u00B4",ttype:UNARY,acc:true},{input:"\\grave",tag:"mover",output:"\u0060",ttype:UNARY,acc:true},{input:"\\breve",tag:"mover",output:"\u02D8",ttype:UNARY,acc:true},{input:"\\check",tag:"mover",output:"\u02C7",ttype:UNARY,acc:true},{input:"\\dot",tag:"mover",output:".",ttype:UNARY,acc:true},{input:"\\ddot",tag:"mover",output:"..",ttype:UNARY,acc:true},{input:"\\mathring",tag:"mover",output:"\u00B0",ttype:UNARY,acc:true},{input:"\\vec",tag:"mover",output:"\u20D7",ttype:UNARY,acc:true},{input:"\\overrightarrow",tag:"mover",output:"\u20D7",ttype:UNARY,acc:true},{input:"\\overleftarrow",tag:"mover",output:"\u20D6",ttype:UNARY,acc:true},{input:"\\hat",tag:"mover",output:"\u005E",ttype:UNARY,acc:true},{input:"\\widehat",tag:"mover",output:"\u0302",ttype:UNARY,acc:true},{input:"\\tilde",tag:"mover",output:"~",ttype:UNARY,acc:true},{input:"\\widetilde",tag:"mover",output:"\u02DC",ttype:UNARY,acc:true},{input:"\\bar",tag:"mover",output:"\u203E",ttype:UNARY,acc:true},{input:"\\overbrace",tag:"mover",output:"\uFE37",ttype:UNARY,acc:true},{input:"\\overbracket",tag:"mover",output:"\u23B4",ttype:UNARY,acc:true},{input:"\\overline",tag:"mover",output:"\u00AF",ttype:UNARY,acc:true},{input:"\\underbrace",tag:"munder",output:"\uFE38",ttype:UNARY,acc:true},{input:"\\underbracket",tag:"munder",output:"\u23B5",ttype:UNARY,acc:true},{input:"\\underline",tag:"munder",output:"\u00AF",ttype:UNARY,acc:true},{input:"\\displaystyle",tag:"mstyle",atname:"displaystyle",atval:"true",ttype:UNARY},{input:"\\textstyle",tag:"mstyle",atname:"displaystyle",atval:"false",ttype:UNARY},{input:"\\scriptstyle",tag:"mstyle",atname:"scriptlevel",atval:"1",ttype:UNARY},{input:"\\scriptscriptstyle",tag:"mstyle",atname:"scriptlevel",atval:"2",ttype:UNARY},{input:"\\textrm",tag:"mstyle",output:"\\mathrm",ttype:DEFINITION},{input:"\\mathbf",tag:"mstyle",atname:"mathvariant",atval:"bold",ttype:UNARY},{input:"\\textbf",tag:"mstyle",atname:"mathvariant",atval:"bold",ttype:UNARY},{input:"\\mathit",tag:"mstyle",atname:"mathvariant",atval:"italic",ttype:UNARY},{input:"\\textit",tag:"mstyle",atname:"mathvariant",atval:"italic",ttype:UNARY},{input:"\\mathtt",tag:"mstyle",atname:"mathvariant",atval:"monospace",ttype:UNARY},{input:"\\texttt",tag:"mstyle",atname:"mathvariant",atval:"monospace",ttype:UNARY},{input:"\\mathsf",tag:"mstyle",atname:"mathvariant",atval:"sans-serif",ttype:UNARY},{input:"\\mathbb",tag:"mstyle",atname:"mathvariant",atval:"double-struck",ttype:UNARY,codes:AMbbb},{input:"\\mathcal",tag:"mstyle",atname:"mathvariant",atval:"script",ttype:UNARY,codes:AMcal},{input:"\\mathfrak",tag:"mstyle",atname:"mathvariant",atval:"fraktur",ttype:UNARY,codes:AMfrk},{input:"\\textcolor",tag:"mstyle",atname:"mathvariant",atval:"mathcolor",ttype:BINARY},{input:"\\colorbox",tag:"mstyle",atname:"mathvariant",atval:"background",ttype:BINARY}];function compareNames(s1,s2){if(s1.input>s2.input)return 1
-  else return-1;}
-  var AMnames=[];function AMinitSymbols(){AMsymbols.sort(compareNames);for(i=0;i<AMsymbols.length;i++)AMnames[i]=AMsymbols[i].input;}
-  var AMmathml="http://www.w3.org/1998/Math/MathML";function AMcreateElementMathML(t){if(isIE)return document.createElement("m:"+t);else return document.createElementNS(AMmathml,t);}
-  function AMcreateMmlNode(t,frag){if(isIE)var node=document.createElement("m:"+t);else var node=document.createElementNS(AMmathml,t);node.appendChild(frag);return node;}
-  function newcommand(oldstr,newstr){AMsymbols=AMsymbols.concat([{input:oldstr,tag:"mo",output:newstr,ttype:DEFINITION}]);}
-  function AMremoveCharsAndBlanks(str,n){var st;st=str.slice(n);for(var i=0;i<st.length&&st.charCodeAt(i)<=32;i=i+1);return st.slice(i);}
-  function AMposition(arr,str,n){if(n==0){var h,m;n=-1;h=arr.length;while(n+1<h){m=(n+h)>>1;if(arr[m]<str)n=m;else h=m;}
-  return h;}else
-  for(var i=n;i<arr.length&&arr[i]<str;i++);return i;}
-  function AMgetSymbol(str){var k=0;var j=0;var mk;var st;var tagst;var match="";var more=true;for(var i=1;i<=str.length&&more;i++){st=str.slice(0,i);j=k;k=AMposition(AMnames,st,j);if(k<AMnames.length&&str.slice(0,AMnames[k].length)==AMnames[k]){match=AMnames[k];mk=k;i=match.length;}
-  more=k<AMnames.length&&str.slice(0,AMnames[k].length)>=AMnames[k];}
-  AMpreviousSymbol=AMcurrentSymbol;if(match!=""){AMcurrentSymbol=AMsymbols[mk].ttype;return AMsymbols[mk];}
-  AMcurrentSymbol=CONST;k=1;st=str.slice(0,1);if("0"<=st&&st<="9")tagst="mn";else tagst=(("A">st||st>"Z")&&("a">st||st>"z")?"mo":"mi");return{input:st,tag:tagst,output:st,ttype:CONST};}
-  var AMpreviousSymbol,AMcurrentSymbol;function AMparseSexpr(str){var symbol,node,result,result2,i,st,newFrag=document.createDocumentFragment();str=AMremoveCharsAndBlanks(str,0);symbol=AMgetSymbol(str);if(symbol==null||symbol.ttype==RIGHTBRACKET)
-  return[null,str,null];if(symbol.ttype==DEFINITION){str=symbol.output+AMremoveCharsAndBlanks(str,symbol.input.length);symbol=AMgetSymbol(str);if(symbol==null||symbol.ttype==RIGHTBRACKET)
-  return[null,str,null];}
-  str=AMremoveCharsAndBlanks(str,symbol.input.length);switch(symbol.ttype){case SPACE:node=AMcreateElementMathML(symbol.tag);node.setAttribute(symbol.atname,symbol.atval);return[node,str,symbol.tag];case UNDEROVER:if(isIE){if(symbol.input.substr(0,4)=="\\big"){str="\\"+symbol.input.substr(4)+str;symbol=AMgetSymbol(str);symbol.ttype=UNDEROVER;str=AMremoveCharsAndBlanks(str,symbol.input.length);}}
-  return[AMcreateMmlNode(symbol.tag,document.createTextNode(symbol.output)),str,symbol.tag];case CONST:var output=symbol.output;if(isIE){if(symbol.input=="'")
-  output="\u2032";else if(symbol.input=="''")
-  output="\u2033";else if(symbol.input=="'''")
-  output="\u2033\u2032";else if(symbol.input=="''''")
-  output="\u2033\u2033";else if(symbol.input=="\\square")
-  output="\u25A1";else if(symbol.input.substr(0,5)=="\\frac"){var denom=symbol.input.substr(6,1);if(denom=="5"||denom=="6"){str=symbol.input.replace(/\\frac/,"\\frac ")+str;return[node,str,symbol.tag];}}}
-  node=AMcreateMmlNode(symbol.tag,document.createTextNode(output));return[node,str,symbol.tag];case LONG:node=AMcreateMmlNode(symbol.tag,document.createTextNode(symbol.output));node.setAttribute("minsize","1.5");node.setAttribute("maxsize","1.5");node=AMcreateMmlNode("mover",node);node.appendChild(AMcreateElementMathML("mspace"));return[node,str,symbol.tag];case STRETCHY:if(isIE&&symbol.input=="\\backslash")
-  symbol.output="\\";node=AMcreateMmlNode(symbol.tag,document.createTextNode(symbol.output));if(symbol.input=="|"||symbol.input=="\\vert"||symbol.input=="\\|"||symbol.input=="\\Vert"){node.setAttribute("lspace","0em");node.setAttribute("rspace","0em");}
-  node.setAttribute("maxsize",symbol.atval);if(symbol.rtag!=null)
-  return[node,str,symbol.rtag];else
-  return[node,str,symbol.tag];case BIG:var atval=symbol.atval;if(isIE)
-  atval=symbol.ieval;symbol=AMgetSymbol(str);if(symbol==null)
-  return[null,str,null];str=AMremoveCharsAndBlanks(str,symbol.input.length);node=AMcreateMmlNode(symbol.tag,document.createTextNode(symbol.output));if(isIE){var space=AMcreateElementMathML("mspace");space.setAttribute("height",atval+"ex");node=AMcreateMmlNode("mrow",node);node.appendChild(space);}else{node.setAttribute("minsize",atval);node.setAttribute("maxsize",atval);}
-  return[node,str,symbol.tag];case LEFTBRACKET:if(symbol.input=="\\left"){symbol=AMgetSymbol(str);if(symbol!=null){if(symbol.input==".")
-  symbol.invisible=true;str=AMremoveCharsAndBlanks(str,symbol.input.length);}}
-  result=AMparseExpr(str,true,false);if(symbol==null||(typeof symbol.invisible=="boolean"&&symbol.invisible))
-  node=AMcreateMmlNode("mrow",result[0]);else{node=AMcreateMmlNode("mo",document.createTextNode(symbol.output));node=AMcreateMmlNode("mrow",node);node.appendChild(result[0]);}
-  return[node,result[1],result[2]];case MATRIX:if(symbol.input=="\\begin{array}"){var mask="";symbol=AMgetSymbol(str);str=AMremoveCharsAndBlanks(str,0);if(symbol==null)
-  mask="l";else{str=AMremoveCharsAndBlanks(str,symbol.input.length);if(symbol.input!="{")
-  mask="l";else do{symbol=AMgetSymbol(str);if(symbol!=null){str=AMremoveCharsAndBlanks(str,symbol.input.length);if(symbol.input!="}")
-  mask=mask+symbol.input;}}while(symbol!=null&&symbol.input!=""&&symbol.input!="}");}
-  result=AMparseExpr("{"+str,true,true);node=AMcreateMmlNode("mtable",result[0]);mask=mask.replace(/l/g,"left ");mask=mask.replace(/r/g,"right ");mask=mask.replace(/c/g,"center ");node.setAttribute("columnalign",mask);node.setAttribute("displaystyle","false");if(isIE)
-  return[node,result[1],null];var lspace=AMcreateElementMathML("mspace");lspace.setAttribute("width","0.167em");var rspace=AMcreateElementMathML("mspace");rspace.setAttribute("width","0.167em");var node1=AMcreateMmlNode("mrow",lspace);node1.appendChild(node);node1.appendChild(rspace);return[node1,result[1],null];}else{result=AMparseExpr("{"+str,true,true);node=AMcreateMmlNode("mtable",result[0]);if(isIE)
-  node.setAttribute("columnspacing","0.25em");else
-  node.setAttribute("columnspacing","0.167em");node.setAttribute("columnalign","right center left");node.setAttribute("displaystyle","true");node=AMcreateMmlNode("mrow",node);return[node,result[1],null];}
-  case TEXT:if(str.charAt(0)=="{")i=str.indexOf("}");else i=0;if(i==-1)
-  i=str.length;st=str.slice(1,i);if(st.charAt(0)==" "){node=AMcreateElementMathML("mspace");node.setAttribute("width","0.33em");newFrag.appendChild(node);}
-  newFrag.appendChild(AMcreateMmlNode(symbol.tag,document.createTextNode(st)));if(st.charAt(st.length-1)==" "){node=AMcreateElementMathML("mspace");node.setAttribute("width","0.33em");newFrag.appendChild(node);}
-  str=AMremoveCharsAndBlanks(str,i+1);return[AMcreateMmlNode("mrow",newFrag),str,null];case UNARY:result=AMparseSexpr(str);if(result[0]==null)return[AMcreateMmlNode(symbol.tag,document.createTextNode(symbol.output)),str];if(typeof symbol.func=="boolean"&&symbol.func){st=str.charAt(0);if(st=="^"||st=="_"||st==","){return[AMcreateMmlNode(symbol.tag,document.createTextNode(symbol.output)),str,symbol.tag];}else{node=AMcreateMmlNode("mrow",AMcreateMmlNode(symbol.tag,document.createTextNode(symbol.output)));if(isIE){var space=AMcreateElementMathML("mspace");space.setAttribute("width","0.167em");node.appendChild(space);}
-  node.appendChild(result[0]);return[node,result[1],symbol.tag];}}
-  if(symbol.input=="\\sqrt"){if(isIE){var space=AMcreateElementMathML("mspace");space.setAttribute("height","1.2ex");space.setAttribute("width","0em");node=AMcreateMmlNode(symbol.tag,result[0])
-  node.appendChild(space);return[node,result[1],symbol.tag];}else
-  return[AMcreateMmlNode(symbol.tag,result[0]),result[1],symbol.tag];}else if(typeof symbol.acc=="boolean"&&symbol.acc){node=AMcreateMmlNode(symbol.tag,result[0]);var output=symbol.output;if(isIE){if(symbol.input=="\\hat")
-  output="\u0302";else if(symbol.input=="\\widehat")
-  output="\u005E";else if(symbol.input=="\\bar")
-  output="\u00AF";else if(symbol.input=="\\grave")
-  output="\u0300";else if(symbol.input=="\\tilde")
-  output="\u0303";}
-  var node1=AMcreateMmlNode("mo",document.createTextNode(output));if(symbol.input=="\\vec"||symbol.input=="\\check")
-  node1.setAttribute("maxsize","1.2");if(isIE&&symbol.input=="\\bar")
-  node1.setAttribute("maxsize","0.5");if(symbol.input=="\\underbrace"||symbol.input=="\\underline")
-  node1.setAttribute("accentunder","true");else
-  node1.setAttribute("accent","true");node.appendChild(node1);if(symbol.input=="\\overbrace"||symbol.input=="\\underbrace")
-  node.ttype=UNDEROVER;return[node,result[1],symbol.tag];}else{if(!isIE&&typeof symbol.codes!="undefined"){for(i=0;i<result[0].childNodes.length;i++)
-  if(result[0].childNodes[i].nodeName=="mi"||result[0].nodeName=="mi"){st=(result[0].nodeName=="mi"?result[0].firstChild.nodeValue:result[0].childNodes[i].firstChild.nodeValue);var newst=[];for(var j=0;j<st.length;j++)
-  if(st.charCodeAt(j)>64&&st.charCodeAt(j)<91)newst=newst+
-  String.fromCharCode(symbol.codes[st.charCodeAt(j)-65]);else newst=newst+st.charAt(j);if(result[0].nodeName=="mi")
-  result[0]=AMcreateElementMathML("mo").appendChild(document.createTextNode(newst));else result[0].replaceChild(AMcreateElementMathML("mo").appendChild(document.createTextNode(newst)),result[0].childNodes[i]);}}
-  node=AMcreateMmlNode(symbol.tag,result[0]);node.setAttribute(symbol.atname,symbol.atval);if(symbol.input=="\\scriptstyle"||symbol.input=="\\scriptscriptstyle")
-  node.setAttribute("displaystyle","false");return[node,result[1],symbol.tag];}
-  case BINARY:result=AMparseSexpr(str);if(result[0]==null)return[AMcreateMmlNode("mo",document.createTextNode(symbol.input)),str,null];result2=AMparseSexpr(result[1]);if(result2[0]==null)return[AMcreateMmlNode("mo",document.createTextNode(symbol.input)),str,null];if(symbol.input=="\\textcolor"||symbol.input=="\\colorbox"){var tclr=str.match(/\{\s*([#\w]+)\s*\}/);str=str.replace(/\{\s*[#\w]+\s*\}/,"");if(tclr!=null){if(IsColorName.test(tclr[1].toLowerCase())){tclr=LaTeXColor[tclr[1].toLowerCase()];}else{tclr=tclr[1];}
-  node=AMcreateElementMathML("mstyle");node.setAttribute(symbol.atval,tclr);node.appendChild(result2[0]);return[node,result2[1],symbol.tag];}}
-  if(symbol.input=="\\root"||symbol.input=="\\stackrel")newFrag.appendChild(result2[0]);newFrag.appendChild(result[0]);if(symbol.input=="\\frac")newFrag.appendChild(result2[0]);return[AMcreateMmlNode(symbol.tag,newFrag),result2[1],symbol.tag];case INFIX:str=AMremoveCharsAndBlanks(str,symbol.input.length);return[AMcreateMmlNode("mo",document.createTextNode(symbol.output)),str,symbol.tag];default:return[AMcreateMmlNode(symbol.tag,document.createTextNode(symbol.output)),str,symbol.tag];}}
-  function AMparseIexpr(str){var symbol,sym1,sym2,node,result,tag,underover;str=AMremoveCharsAndBlanks(str,0);sym1=AMgetSymbol(str);result=AMparseSexpr(str);node=result[0];str=result[1];tag=result[2];symbol=AMgetSymbol(str);if(symbol.ttype==INFIX){str=AMremoveCharsAndBlanks(str,symbol.input.length);result=AMparseSexpr(str);if(result[0]==null)
-  result[0]=AMcreateMmlNode("mo",document.createTextNode("\u25A1"));str=result[1];tag=result[2];if(symbol.input=="_"||symbol.input=="^"){sym2=AMgetSymbol(str);tag=null;underover=((sym1.ttype==UNDEROVER)||(node.ttype==UNDEROVER));if(symbol.input=="_"&&sym2.input=="^"){str=AMremoveCharsAndBlanks(str,sym2.input.length);var res2=AMparseSexpr(str);str=res2[1];tag=res2[2];node=AMcreateMmlNode((underover?"munderover":"msubsup"),node);node.appendChild(result[0]);node.appendChild(res2[0]);}else if(symbol.input=="_"){node=AMcreateMmlNode((underover?"munder":"msub"),node);node.appendChild(result[0]);}else{node=AMcreateMmlNode((underover?"mover":"msup"),node);node.appendChild(result[0]);}
-  node=AMcreateMmlNode("mrow",node);}else{node=AMcreateMmlNode(symbol.tag,node);if(symbol.input=="\\atop"||symbol.input=="\\choose")
-  node.setAttribute("linethickness","0ex");node.appendChild(result[0]);if(symbol.input=="\\choose")
-  node=AMcreateMmlNode("mfenced",node);}}
-  return[node,str,tag];}
-  function AMparseExpr(str,rightbracket,matrix){var symbol,node,result,i,tag,newFrag=document.createDocumentFragment();do{str=AMremoveCharsAndBlanks(str,0);result=AMparseIexpr(str);node=result[0];str=result[1];tag=result[2];symbol=AMgetSymbol(str);if(node!=undefined){if((tag=="mn"||tag=="mi")&&symbol!=null&&typeof symbol.func=="boolean"&&symbol.func){var space=AMcreateElementMathML("mspace");space.setAttribute("width","0.167em");node=AMcreateMmlNode("mrow",node);node.appendChild(space);}
-  newFrag.appendChild(node);}}while((symbol.ttype!=RIGHTBRACKET)&&symbol!=null&&symbol.output!="");tag=null;if(symbol.ttype==RIGHTBRACKET){if(symbol.input=="\\right"){str=AMremoveCharsAndBlanks(str,symbol.input.length);symbol=AMgetSymbol(str);if(symbol!=null&&symbol.input==".")
-  symbol.invisible=true;if(symbol!=null)
-  tag=symbol.rtag;}
-  if(symbol!=null)
-  str=AMremoveCharsAndBlanks(str,symbol.input.length);var len=newFrag.childNodes.length;if(matrix&&len>0&&newFrag.childNodes[len-1].nodeName=="mrow"&&len>1&&newFrag.childNodes[len-2].nodeName=="mo"&&newFrag.childNodes[len-2].firstChild.nodeValue=="&"){var pos=[];var m=newFrag.childNodes.length;for(i=0;matrix&&i<m;i=i+2){pos[i]=[];node=newFrag.childNodes[i];for(var j=0;j<node.childNodes.length;j++)
-  if(node.childNodes[j].firstChild.nodeValue=="&")
-  pos[i][pos[i].length]=j;}
-  var row,frag,n,k,table=document.createDocumentFragment();for(i=0;i<m;i=i+2){row=document.createDocumentFragment();frag=document.createDocumentFragment();node=newFrag.firstChild;n=node.childNodes.length;k=0;for(j=0;j<n;j++){if(typeof pos[i][k]!="undefined"&&j==pos[i][k]){node.removeChild(node.firstChild);row.appendChild(AMcreateMmlNode("mtd",frag));k++;}else frag.appendChild(node.firstChild);}
-  row.appendChild(AMcreateMmlNode("mtd",frag));if(newFrag.childNodes.length>2){newFrag.removeChild(newFrag.firstChild);newFrag.removeChild(newFrag.firstChild);}
-  table.appendChild(AMcreateMmlNode("mtr",row));}
-  return[table,str];}
-  if(typeof symbol.invisible!="boolean"||!symbol.invisible){node=AMcreateMmlNode("mo",document.createTextNode(symbol.output));newFrag.appendChild(node);}}
-  return[newFrag,str,tag];}
-  function AMparseMath(str){var result,node=AMcreateElementMathML("mstyle");var cclr=str.match(/\\color\s*\{\s*([#\w]+)\s*\}/);str=str.replace(/\\color\s*\{\s*[#\w]+\s*\}/g,"");if(cclr!=null){if(IsColorName.test(cclr[1].toLowerCase())){cclr=LaTeXColor[cclr[1].toLowerCase()];}else{cclr=cclr[1];}
-  node.setAttribute("mathcolor",cclr);}else{if(mathcolor!="")node.setAttribute("mathcolor",mathcolor);};if(mathfontfamily!="")node.setAttribute("fontfamily",mathfontfamily);node.appendChild(AMparseExpr(str.replace(/^\s+/g,""),false,false)[0]);node=AMcreateMmlNode("math",node);if(showasciiformulaonhover)
-  node.setAttribute("title",str.replace(/\s+/g," "));if(false){var fnode=AMcreateElementXHTML("font");fnode.setAttribute("face",mathfontfamily);fnode.appendChild(node);return fnode;}
-  return node;}
-  function AMstrarr2docFrag(arr,linebreaks){var newFrag=document.createDocumentFragment();var expr=false;for(var i=0;i<arr.length;i++){if(expr)newFrag.appendChild(AMparseMath(arr[i]));else{var arri=(linebreaks?arr[i].split("\n\n"):[arr[i]]);newFrag.appendChild(AMcreateElementXHTML("span").appendChild(document.createTextNode(arri[0])));for(var j=1;j<arri.length;j++){newFrag.appendChild(AMcreateElementXHTML("p"));newFrag.appendChild(AMcreateElementXHTML("span").appendChild(document.createTextNode(arri[j])));}}
-  expr=!expr;}
-  return newFrag;}
-  function AMprocessNodeR(n,linebreaks){var mtch,str,arr,frg,i;if(n.childNodes.length==0){if((n.nodeType!=8||linebreaks)&&n.parentNode.nodeName!="form"&&n.parentNode.nodeName!="FORM"&&n.parentNode.nodeName!="textarea"&&n.parentNode.nodeName!="TEXTAREA"&&n.parentNode.nodeName!="pre"&&n.parentNode.nodeName!="PRE"){str=n.nodeValue;if(!(str==null)){str=str.replace(/\r\n\r\n/g,"\n\n");str=str.replace(/\x20+/g," ");str=str.replace(/\s*\r\n/g," ");mtch=(str.indexOf("\$")==-1?false:true);str=str.replace(/([^\\])\$/g,"$1 \$");str=str.replace(/^\$/," \$");arr=str.split(" \$");for(i=0;i<arr.length;i++)
-  arr[i]=arr[i].replace(/\\\$/g,"\$");if(arr.length>1||mtch){if(checkForMathML){checkForMathML=false;var nd=AMisMathMLavailable();AMnoMathML=nd!=null;if(AMnoMathML&&notifyIfNoMathML)
-  if(alertIfNoMathML)
-  alert("To view the ASCIIMathML notation use Internet Explorer 6 +\nMathPlayer (free from www.dessci.com)\nor Firefox/Mozilla/Netscape");else AMbody.insertBefore(nd,AMbody.childNodes[0]);}
-  if(!AMnoMathML){frg=AMstrarr2docFrag(arr,n.nodeType==8);var len=frg.childNodes.length;n.parentNode.replaceChild(frg,n);return len-1;}else return 0;}}}else return 0;}else if(n.nodeName!="math"){for(i=0;i<n.childNodes.length;i++)
-  i+=AMprocessNodeR(n.childNodes[i],linebreaks);}
-  return 0;}
-  function AMprocessNode(n,linebreaks,spanclassAM){var frag,st;if(spanclassAM!=null){frag=document.getElementsByTagName("span")
-  for(var i=0;i<frag.length;i++)
-  if(frag[i].className=="AM")
-  AMprocessNodeR(frag[i],linebreaks);}else{try{st=n.innerHTML;}catch(err){}
-  if(st==null||st.indexOf("\$")!=-1)
-  AMprocessNodeR(n,linebreaks);}
-  if(isIE){frag=document.getElementsByTagName('math');for(var i=0;i<frag.length;i++)frag[i].update()}}
-  var inAppendix=false;var sectionCntr=0;var IEcommentWarning=true;var biblist=[];var bibcntr=0;var LaTeXCounter=[];LaTeXCounter["definition"]=0;LaTeXCounter["proposition"]=0;LaTeXCounter["lemma"]=0;LaTeXCounter["theorem"]=0;LaTeXCounter["corollary"]=0;LaTeXCounter["example"]=0;LaTeXCounter["exercise"]=0;LaTeXCounter["subsection"]=0;LaTeXCounter["subsubsection"]=0;LaTeXCounter["figure"]=0;LaTeXCounter["equation"]=0;LaTeXCounter["table"]=0;var LaTeXColor=[];LaTeXColor["greenyellow"]="#D9FF4F";LaTeXColor["yellow"]="#FFFF00";LaTeXColor["goldenrod"]="#FFE529";LaTeXColor["dandelion"]="#FFB529";LaTeXColor["apricot"]="#FFAD7A";LaTeXColor["peach"]="#FF804D";LaTeXColor["melon"]="#FF8A80";LaTeXColor["yelloworange"]="#FF9400";LaTeXColor["orange"]="#FF6321";LaTeXColor["burntorange"]="#FF7D00";LaTeXColor["bittersweet"]="#C20300";LaTeXColor["redorange"]="#FF3B21";LaTeXColor["mahogany"]="#A60000";LaTeXColor["maroon"]="#AD0000";LaTeXColor["brickred"]="#B80000";LaTeXColor["red"]="#FF0000";LaTeXColor["orangered"]="#FF0080";LaTeXColor["rubinered"]="#FF00DE";LaTeXColor["wildstrawberry"]="#FF0A9C";LaTeXColor["salmon"]="#FF789E";LaTeXColor["carnationpink"]="#FF5EFF";LaTeXColor["magenta"]="#FF00FF";LaTeXColor["violetred"]="#FF30FF";LaTeXColor["rhodamine"]="#FF2EFF";LaTeXColor["mulberry"]="#A314FA";LaTeXColor["redviolet"]="#9600A8";LaTeXColor["fuchsia"]="#7303EB";LaTeXColor["lavender"]="#FF85FF";LaTeXColor["thistle"]="#E069FF";LaTeXColor["orchid"]="#AD5CFF";LaTeXColor["darkorchid"]="#9933CC";LaTeXColor["purple"]="#8C24FF";LaTeXColor["plum"]="#8000FF";LaTeXColor["violet"]="#361FFF";LaTeXColor["royalpurple"]="#401AFF";LaTeXColor["blueviolet"]="#1A0DF5";LaTeXColor["periwinkle"]="#6E73FF";LaTeXColor["cadetblue"]="#616EC4";LaTeXColor["cornflowerblue"]="#59DEFF";LaTeXColor["midnightblue"]="#007091";LaTeXColor["navyblue"]="#0F75FF";LaTeXColor["royalblue"]="#0080FF";LaTeXColor["blue"]="#0000FF";LaTeXColor["cerulean"]="#0FE3FF";LaTeXColor["cyan"]="#00FFFF";LaTeXColor["processblue"]="#0AFFFF";LaTeXColor["skyblue"]="#61FFE0";LaTeXColor["turquoise"]="#26FFCC";LaTeXColor["tealblue"]="#1FFAA3";LaTeXColor["aquamarine"]="#2EFFB2";LaTeXColor["bluegreen"]="#26FFAB";LaTeXColor["emerald"]="#00FF80";LaTeXColor["junglegreen"]="#03FF7A";LaTeXColor["seagreen"]="#4FFF80";LaTeXColor["green"]="#00FF00";LaTeXColor["forestgreen"]="#00E000";LaTeXColor["pinegreen"]="#00BF29";LaTeXColor["limegreen"]="#80FF00";LaTeXColor["yellowgreen"]="#8FFF42";LaTeXColor["springgreen"]="#BDFF3D";LaTeXColor["olivegreen"]="#009900";LaTeXColor["rawsienna"]="#8C0000";LaTeXColor["sepia"]="#4D0000";LaTeXColor["brown"]="#660000";LaTeXColor["tan"]="#DB9470";LaTeXColor["gray"]="#808080";LaTeXColor["grey"]="#808080";LaTeXColor["black"]="#000000";LaTeXColor["white"]="#FFFFFF";var IsColorName=/^(?:greenyellow|yellow|goldenrod|dandelion|apricot|peach|melon|yelloworange|orange|burntorange|bittersweet|redorange|mahogany|maroon|brickred|red|orangered|rubinered|wildstrawberry|salmon|carnationpink|magenta|violetred|rhodamine|mulberry|redviolet|fuchsia|lavender|thistle|orchid|darkorchid|purple|plum|violet|royalpurple|blueviolet|periwinkle|cadetblue|cornflowerblue|midnightblue|navyblue|royalblue|blue|cerulean|cyan|processblue|skyblue|turquoise|tealblue|aquamarine|bluegreen|emerald|junglegreen|seagreen|green|forestgreen|pinegreen|limegreen|yellowgreen|springgreen|olivegreen|rawsienna|sepia|brown|tan|gray|grey|black|white)$/;var IsCounter=/^(?:definition|proposition|lemma|theorem|corollary|example|exercise|subsection|subsubsection|figure|equation|table)$/;var IsLaTeXElement=/^(?:displayequation|title|author|address|date|abstract|keyword|section|subsection|subsubsection|ref|cite|thebibliography|definition|proposition|lemma|theorem|corollary|example|exercise|itemize|enumerate|enddefinition|endproposition|endlemma|endtheorem|endcorollary|endexample|endexercise|enditemize|endenumerate|LaTeXMathMLlabel|LaTeXMathML|smallskip|medskip|bigskip|quote|quotation|endquote|endquotation|center|endcenter|description|enddescription|inlinemath)$/;var IsTextOnlyArea=/^(?:form|textarea|pre)$/i;var tableid=0;function makeNumberString(cntr){if(sectionCntr>0){if(inAppendix){return"A"+sectionCntr+"."+cntr;}else{return sectionCntr+"."+cntr;}}else{return""+cntr;}};function LaTeXpreProcess(thebody){var TheBody=thebody;if(TheBody.hasChildNodes()){if(!(IsLaTeXElement.test(TheBody.className)))
-  {for(var i=0;i<TheBody.childNodes.length;i++){LaTeXpreProcess(TheBody.childNodes[i])}}}
-  else{if(TheBody.nodeType==3&&!(IsTextOnlyArea.test(TheBody.parentNode.nodeName)))
-  {var str=TheBody.nodeValue;if(!(str==null)){str=str.replace(/\\%/g,"<per>");str=str.replace(/%[^\n]*(?=\n)/g,"");str=str.replace(/%[^\r]*(?=\r)/g,"");str=str.replace(/%[^\n]*$/,"")
-  if(isIE&&str.match(/%/g)!=null&&IEcommentWarning){alert("Comments may not have parsed properly.  Try putting in <pre class='LaTeX><div>..</div></pre> structure.");IEcommentWarning=false;}
-  str=str.replace(/<per>/g,"%");if(str.match(/XXX[\s\S]*/)!=null){var tmp=str.match(/XXX[\s\S]*/)[0];var tmpstr=tmp.charCodeAt(7)+"::"+tmp.charCodeAt(8)+"::"+tmp.charCodeAt(9)+"::"+tmp.charCodeAt(10)+"::"+tmp.charCodeAt(11)+"::"+tmp.charCodeAt(12)+"::"+tmp.charCodeAt(13);alert(tmpstr);}
-  str=str.replace(/([^\\])\\(\s)/g,"$1\u00A0$2");str=str.replace(/\\quad/g,"\u2001");str=str.replace(/\\qquad/g,"\u2001\u2001");str=str.replace(/\\enspace/g,"\u2002");str=str.replace(/\\;/g,"\u2004");str=str.replace(/\\:/g,"\u2005");str=str.replace(/\\,/g,"\u2006");str=str.replace(/\\thinspace/g,"\u200A");str=str.replace(/([^\\])~/g,"$1\u00A0");str=str.replace(/\\~/g,"~");str=str.replace(/\\\[/g," <DEQ> $\\displaystyle{");str=str.replace(/\\\]/g,"}$ <DEQ> ");str=str.replace(/\$\$/g,"${$<DEQ>$}$");str=str.replace(/\\begin\s*\{\s*array\s*\}/g,"\\begin{array}");str=str.replace(/\\end\s*\{\s*array\s*\}/g,"\\end{array}");str=str.replace(/\\begin\s*\{\s*eqnarray\s*\}/g,"  <DEQ>eqno$\\begin{eqnarray}");str=str.replace(/\\end\s*\{\s*eqnarray\s*\}/g,"\\end{eqnarray}$<DEQ>  ");str=str.replace(/\\begin\s*\{\s*eqnarray\*\s*\}/g,"  <DEQ>$\\begin{eqnarray}");str=str.replace(/\\end\s*\{\s*eqnarray\*\s*\}/g,"\\end{eqnarray}$<DEQ>  ");str=str.replace(/\\begin\s*\{\s*displaymath\s*\}/g," <DEQ> $\\displaystyle{");str=str.replace(/\\end\s*\{\s*displaymath\s*\}/g,"}$ <DEQ> ");str=str.replace(/\\begin\s*\{\s*equation\s*\*\s*\}/g," <DEQ> $\\displaystyle{");str=str.replace(/\\end\s*\{\s*equation\s*\*\s*\}/g,"}$ <DEQ> ");str=str.replace(/\\begin\s*\{\s*equation\s*\}/g," <DEQ>eqno$\\displaystyle{");str=str.replace(/\\end\s*\{\s*equation\s*\}/g,"}$ <DEQ> ");str=str.split("<DEQ>");var newFrag=document.createDocumentFragment();for(var i=0;i<str.length;i++){if(i%2){var DEQtable=document.createElement("table");DEQtable.className='displayequation';var DEQtbody=document.createElement("tbody");var DEQtr=document.createElement("tr");var DEQtdeq=document.createElement("td");DEQtdeq.className='eq';str[i]=str[i].replace(/\$\}\$/g,"$\\displaystyle{");str[i]=str[i].replace(/\$\{\$/g,"}");var lbl=str[i].match(/\\label\s*\{\s*(\w+)\s*\}/);var ISeqno=str[i].match(/^eqno/);str[i]=str[i].replace(/^eqno/," ");str[i]=str[i].replace(/\\label\s*\{\s*\w+\s*\}/," ");DEQtdeq.appendChild(document.createTextNode(str[i]));DEQtr.appendChild(DEQtdeq);str[i]=str[i].replace(/\\nonumber/g,"");if(ISeqno!=null||lbl!=null){var DEQtdno=document.createElement("td");DEQtdno.className='eqno';LaTeXCounter["equation"]++;var eqnoString=makeNumberString(LaTeXCounter["equation"]);var DEQanchor=document.createElement("a");if(lbl!=null){DEQanchor.id=lbl[1]};DEQanchor.className="eqno";var anchorSpan=document.createElement("span");anchorSpan.className="eqno";anchorSpan.style.display="none";anchorSpan.appendChild(document.createTextNode(eqnoString));DEQanchor.appendChild(anchorSpan);DEQtdno.appendChild(DEQanchor);var DEQspan=document.createElement("span");DEQspan.className="eqno";DEQspan.appendChild(document.createTextNode("("+eqnoString+")"));DEQtdno.appendChild(DEQspan);DEQtr.appendChild(DEQtdno);}
-  DEQtbody.appendChild(DEQtr);DEQtable.appendChild(DEQtbody);newFrag.appendChild(DEQtable);}
-  else{str[i]=str[i].replace(/\$\}\$/g,"");str[i]=str[i].replace(/\$\{\$/g,"");str[i]=str[i].replace(/\\maketitle/g,"");str[i]=str[i].replace(/\\begin\s*\{\s*document\s*\}/g,"");str[i]=str[i].replace(/\\end\s*\{\s*document\s*\}/g,"");str[i]=str[i].replace(/\\documentclass[^\}]*?\}/g,"");str[i]=str[i].replace(/\\usepackage[^\}]*?\}/g,"");str[i]=str[i].replace(/\\noindent/g,"");str[i]=str[i].replace(/\\notag/g,"");str[i]=str[i].replace(/\\ref\s*\{\s*(\w+)\}/g," \\[ref\\]$1\\[ ");str[i]=str[i].replace(/\\url\s*\{\s*([^\}\n]+)\}/g," \\[url\\]$1\\[ ");str[i]=str[i].replace(/\\href\s*\{\s*([^\}]+)\}\s*\{\s*([^\}]+)\}/g," \\[href\\]$1\\]$2\\[ ");str[i]=str[i].replace(/\\cite\s*\{\s*(\w+)\}/g," \\[cite\\]$1\\[ ");str[i]=str[i].replace(/\\qed/g,"\u220E");str[i]=str[i].replace(/\\endproof/g,"\u220E");str[i]=str[i].replace(/\\proof/g,"\\textbf{Proof: }");str[i]=str[i].replace(/\\n(?=\s)/g," \\[br\\] \\[ ");str[i]=str[i].replace(/\\newline/g," \\[br\\] \\[ ");str[i]=str[i].replace(/\\linebreak/g," \\[br\\] \\[ ");str[i]=str[i].replace(/\\smallskip/g," \\[logicalbreak\\]smallskip\\[ ");str[i]=str[i].replace(/\\medskip/g," \\[logicalbreak\\]medskip\\[ ");str[i]=str[i].replace(/\\bigskip/g," \\[logicalbreak\\]bigskip\\[ ");str[i]=str[i].replace(/[\n\r]+[ \f\n\r\t\v\u2028\u2029]*[\n\r]+/g," \\[logicalbreak\\]LaTeXMathML\\[ ");if(isIE){str[i]=str[i].replace(/\r/g," ");}
-  str[i]=str[i].replace(/\\bibitem\s*([^\{]*\{\s*\w*\s*\})/g," \\[bibitem\\]$1\\[ ");str[i]=str[i].replace(/\\bibitem\s*/g," \\[bibitem\\] \\[ ");str[i]=str[i].replace(/\\item\s*\[\s*(\w+)\s*\]/g," \\[alistitem\\]$1\\[ ");str[i]=str[i].replace(/\\item\s*/g," \\[alistitem\\] \\[ ");str[i]=str[i].replace(/\\appendix/g," \\[appendix\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*figure\s*\}([\s\S]+?)\\end\s*\{\s*figure\s*\}/g," \\[figure\\]$1\\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*table\s*\}([\s\S]+?)\\end\s*\{\s*table\s*\}/g," \\[table\\]$1\\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*theorem\s*\}/g," \\[theorem\\]Theorem \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*theorem\s*\}/g," \\[endtheorem\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*definition\s*\}/g," \\[definition\\]Definition \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*definition\s*\}/g," \\[enddefinition\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*lemma\s*\}/g," \\[lemma\\]Lemma \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*lemma\s*\}/g," \\[endlemma\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*corollary\s*\}/g," \\[corollary\\]Corollary \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*corollary\s*\}/g," \\[endcorollary\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*proposition\s*\}/g," \\[proposition\\]Proposition \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*proposition\s*\}/g," \\[endproposition\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*example\s*\}/g," \\[example\\]Example \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*example\s*\}/g," \\[endexample\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*exercise\s*\}/g," \\[exercise\\]Exercise \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*exercise\s*\}/g," \\[endexercise\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*thebibliography\s*\}\s*\{\s*\w+\s*\}/g," \\[thebibliography\\]References \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*thebibliography\s*\}/g," \\[thebibliography\\]References \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*thebibliography\s*\}/g," \\[endthebibliography\\]References \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*proof\s*\}/g," \\[proof\\]Proof: \\[ ");if(isIE){str[i]=str[i].replace(/\\end\s*\{\s*proof\s*\}/g,"\u220E \\[endproof\\] \\[ ");}else{str[i]=str[i].replace(/\\end\s*\{\s*proof\s*\}/g," \\[endproof\\] \\[ ");}
-  str[i]=str[i].replace(/\\title\s*\{\s*([^\}]+)\}/g," \\[title\\] \\[$1 \\[endtitle\\] \\[ ");str[i]=str[i].replace(/\\author\s*\{\s*([^\}]+)\}/g," \\[author\\] \\[$1 \\[endauthor\\] \\[ ");str[i]=str[i].replace(/\\address\s*\{\s*([^\}]+)\}/g," \\[address\\] \\[$1 \\[endaddress\\] \\[ ");str[i]=str[i].replace(/\\date\s*\{\s*([^\}]+)\}/g," \\[date\\] \\[$1 \\[enddate\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*keyword\s*\}/g," \\[keyword\\] \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*keyword\s*\}/g," \\[endkeyword\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*abstract\s*\}/g," \\[abstract\\] \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*abstract\s*\}/g," \\[endabstract\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*(?!array|tabular)(\w+)\s*\}/g," \\[$1\\] \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*(?!array|tabular)(\w+)\s*\}/g," \\[end$1\\] \\[ ");var sectionIndex=str[i].search(/\\section\s*\{\s*[\s\S]+\}/);while(sectionIndex>=0){str[i]=str[i].replace(/\\section\s*\{/," \\[section\\]");var delimcnt=1;for(var ii=sectionIndex;ii<str[i].length;ii++){if(str[i].charAt(ii)=="{"){delimcnt++};if(str[i].charAt(ii)=="}"){delimcnt--};if(delimcnt==0){str[i]=str[i].substring(0,ii)+"\\[ "+str[i].substring(ii+1,str[i].length);break;}};sectionIndex=str[i].search(/\\section\s*\{\s*[\s\S]+\}/);}
-  sectionIndex=str[i].search(/\\subsection\s*\{\s*[\s\S]+\}/);while(sectionIndex>=0){str[i]=str[i].replace(/\\subsection\s*\{/," \\[subsection\\]");var delimcnt=1;for(var ii=sectionIndex;ii<str[i].length;ii++){if(str[i].charAt(ii)=="{"){delimcnt++};if(str[i].charAt(ii)=="}"){delimcnt--};if(delimcnt==0){str[i]=str[i].substring(0,ii)+"\\[ "+str[i].substring(ii+1,str[i].length);break;}};sectionIndex=str[i].search(/\\subsection\s*\{\s*[\s\S]+\}/);}
-  sectionIndex=str[i].search(/\\subsubsection\s*\{\s*[\s\S]+\}/);while(sectionIndex>=0){str[i]=str[i].replace(/\\subsubsection\s*\{/," \\[subsubsection\\]");var delimcnt=1;for(var ii=sectionIndex;ii<str[i].length;ii++){if(str[i].charAt(ii)=="{"){delimcnt++};if(str[i].charAt(ii)=="}"){delimcnt--};if(delimcnt==0){str[i]=str[i].substring(0,ii)+"\\[ "+str[i].substring(ii+1,str[i].length);break;}};sectionIndex=str[i].search(/\\subsubsection\s*\{\s*[\s\S]+\}/);}
-  var CatToNextEven="";var strtmp=str[i].split("\\[");for(var j=0;j<strtmp.length;j++){if(j%2){var strtmparray=strtmp[j].split("\\]");switch(strtmparray[0]){case"section":var nodeTmp=document.createElement("H2");nodeTmp.className='section';sectionCntr++;for(var div in LaTeXCounter){LaTeXCounter[div]=0};var nodeAnchor=document.createElement("a");if(inAppendix){nodeAnchor.className='appendixsection';}else{nodeAnchor.className='section';}
-  var nodeNumString=makeNumberString("");var anchorSpan=document.createElement("span");anchorSpan.className="section";anchorSpan.style.display="none";anchorSpan.appendChild(document.createTextNode(nodeNumString));nodeAnchor.appendChild(anchorSpan);nodeTmp.appendChild(nodeAnchor);var nodeSpan=document.createElement("span");nodeSpan.className='section';nodeSpan.appendChild(document.createTextNode(nodeNumString+" "));nodeTmp.appendChild(nodeSpan);nodeTmp.appendChild(document.createTextNode(strtmparray[1]));newFrag.appendChild(nodeTmp);break;case"subsection":var nodeTmp=document.createElement("H3");nodeTmp.className='subsection';LaTeXCounter["subsection"]++;LaTeXCounter["subsubsection"]=0;var nodeAnchor=document.createElement("a");nodeAnchor.className='subsection';var nodeNumString=makeNumberString(LaTeXCounter["subsection"]);var anchorSpan=document.createElement("span");anchorSpan.className="subsection";anchorSpan.style.display="none";anchorSpan.appendChild(document.createTextNode(nodeNumString));nodeAnchor.appendChild(anchorSpan);nodeTmp.appendChild(nodeAnchor);var nodeSpan=document.createElement("span");nodeSpan.className='subsection';nodeSpan.appendChild(document.createTextNode(nodeNumString+". "));nodeTmp.appendChild(nodeSpan);nodeTmp.appendChild(document.createTextNode(strtmparray[1]));newFrag.appendChild(nodeTmp);break;case"subsubsection":var nodeTmp=document.createElement("H4");nodeTmp.className='subsubsection';LaTeXCounter["subsubsection"]++;var nodeAnchor=document.createElement("a");nodeAnchor.className='subsubsection';var nodeNumString=makeNumberString(LaTeXCounter["subsection"]+"."+LaTeXCounter["subsubsection"]);var anchorSpan=document.createElement("span");anchorSpan.className="subsubsection";anchorSpan.style.display="none";anchorSpan.appendChild(document.createTextNode(nodeNumString));nodeAnchor.appendChild(anchorSpan);nodeTmp.appendChild(nodeAnchor);var nodeSpan=document.createElement("span");nodeSpan.className='subsubsection';nodeSpan.appendChild(document.createTextNode(nodeNumString+". "));nodeTmp.appendChild(nodeSpan);nodeTmp.appendChild(document.createTextNode(strtmparray[1]));newFrag.appendChild(nodeTmp);break;case"href":var nodeTmp=document.createElement("a");nodeTmp.className='LaTeXMathML';nodeTmp.href=strtmparray[1];nodeTmp.appendChild(document.createTextNode(strtmparray[2]));newFrag.appendChild(nodeTmp);break;case"url":var nodeTmp=document.createElement("a");nodeTmp.className='LaTeXMathML';nodeTmp.href=strtmparray[1];nodeTmp.appendChild(document.createTextNode(strtmparray[1]));newFrag.appendChild(nodeTmp);break;case"figure":var nodeTmp=document.createElement("table");nodeTmp.className='figure';var FIGtbody=document.createElement("tbody");var FIGlbl=strtmparray[1].match(/\\label\s*\{\s*(\w+)\s*\}/);strtmparray[1]=strtmparray[1].replace(/\\label\s*\{\w+\}/g,"");var capIndex=strtmparray[1].search(/\\caption\s*\{[\s\S]+\}/);var FIGcap="";if(capIndex>=0){var tmp=strtmparray[1];var delimcnt=0;var capstart=-1;for(var pos=capIndex;pos<tmp.length;pos++){if(tmp.charAt(pos)=="{"){delimcnt++};if(tmp.charAt(pos)=="}"){delimcnt--};if(delimcnt==1&&capstart<0){capstart=pos+1};if(delimcnt==0&&capstart>0){capend=pos-1;FIGcap=tmp.substring(capstart,pos);break}}}
-  var FIGtr2=document.createElement("tr");var FIGtd2=document.createElement("td");FIGtd2.className="caption";var FIGanchor=document.createElement("a");FIGanchor.className="figure";if(FIGlbl!=null){FIGanchor.id=FIGlbl[1];}
-  LaTeXCounter["figure"]++;var fignmbr=makeNumberString(LaTeXCounter["figure"]);var anchorSpan=document.createElement("span");anchorSpan.className="figure";anchorSpan.style.display="none";anchorSpan.appendChild(document.createTextNode(fignmbr));FIGanchor.appendChild(anchorSpan);FIGtd2.appendChild(FIGanchor);var FIGspan=document.createElement("span");FIGspan.className="figure";FIGspan.appendChild(document.createTextNode("Figure "+fignmbr+". "));FIGtd2.appendChild(FIGspan);FIGtd2.appendChild(document.createTextNode(""+FIGcap));FIGtr2.appendChild(FIGtd2);FIGtbody.appendChild(FIGtr2);var IsSpecial=false;var FIGinfo=strtmparray[1].match(/\\includegraphics\s*\{([^\}]+)\}/);if(FIGinfo==null){FIGinfo=strtmparray[1].match(/\\includegraphics\s*\[[^\]]*\]\s*\{\s*([^\}]+)\s*\}/);}
-  if(FIGinfo==null){FIGinfo=strtmparray[1].match(/\\special\s*\{\s*([^\}]+)\}/);IsSpecial=true};if(FIGinfo!=null){var FIGtr1=document.createElement("tr");var FIGtd1=document.createElement("td");FIGtd1.className="image";var FIGimg=document.createElement("img");var FIGsrc=FIGinfo[1];FIGimg.src=FIGsrc;FIGimg.alt="Figure "+FIGsrc+" did not load";FIGimg.title="Figure "+fignmbr+". "+FIGcap;FIGimg.id="figure"+fignmbr;FIGtd1.appendChild(FIGimg);FIGtr1.appendChild(FIGtd1);FIGtbody.appendChild(FIGtr1);}
-  nodeTmp.appendChild(FIGtbody);newFrag.appendChild(nodeTmp);break;case"table":var nodeTmp=document.createElement("table");if(strtmparray[1].search(/\\centering/)>=0){nodeTmp.className='LaTeXtable centered';nodeTmp.align="center";}else{nodeTmp.className='LaTeXtable';};tableid++;nodeTmp.id="LaTeXtable"+tableid;var TABlbl=strtmparray[1].match(/\\label\s*\{\s*(\w+)\s*\}/);strtmparray[1]=strtmparray[1].replace(/\\label\s*\{\w+\}/g,"");var capIndex=strtmparray[1].search(/\\caption\s*\{[\s\S]+\}/);var TABcap="";if(capIndex>=0){var tmp=strtmparray[1];var delimcnt=0;var capstart=-1;for(var pos=capIndex;pos<tmp.length;pos++){if(tmp.charAt(pos)=="{"){delimcnt++};if(tmp.charAt(pos)=="}"){delimcnt--};if(delimcnt==1&&capstart<0){capstart=pos+1};if(delimcnt==0&&capstart>0){capend=pos-1;TABcap=tmp.substring(capstart,pos);break}}}
-  if(TABcap!=""){var TABtbody=document.createElement("tbody");var TABcaption=document.createElement("caption");TABcaption.className="LaTeXtable centered";var TABanchor=document.createElement("a");TABanchor.className="LaTeXtable";if(TABlbl!=null){TABanchor.id=TABlbl[1];}
-  LaTeXCounter["table"]++;var tabnmbr=makeNumberString(LaTeXCounter["table"]);var anchorSpan=document.createElement("span");anchorSpan.className="LaTeXtable";anchorSpan.style.display="none";anchorSpan.appendChild(document.createTextNode(tabnmbr));TABanchor.appendChild(anchorSpan);TABcaption.appendChild(TABanchor);var TABspan=document.createElement("span");TABspan.className="LaTeXtable";TABspan.appendChild(document.createTextNode("Table "+tabnmbr+". "));TABcaption.appendChild(TABspan);TABcaption.appendChild(document.createTextNode(""+TABcap));nodeTmp.appendChild(TABcaption);}
-  var TABinfo=strtmparray[1].match(/\\begin\s*\{\s*tabular\s*\}([\s\S]+)\\end\s*\{\s*tabular\s*\}/);if(TABinfo!=null){var TABtbody=document.createElement('tbody');var TABrow=null;var TABcell=null;var row=0;var col=0;var TABalign=TABinfo[1].match(/^\s*\{([^\}]+)\}/);TABinfo=TABinfo[1].replace(/^\s*\{[^\}]+\}/,"");TABinfo=TABinfo.replace(/\\hline/g,"");TABalign[1]=TABalign[1].replace(/\|/g,"");TABalign[1]=TABalign[1].replace(/\s/g,"");TABinfo=TABinfo.split("\\\\");for(row=0;row<TABinfo.length;row++){TABrow=document.createElement("tr");TABinfo[row]=TABinfo[row].split("&");for(col=0;col<TABinfo[row].length;col++){TABcell=document.createElement("td");switch(TABalign[1].charAt(col)){case"l":TABcell.align="left";break;case"c":TABcell.align="center";break;case"r":TABcell.align="right";break;default:TABcell.align="left";};TABcell.appendChild(document.createTextNode(TABinfo[row][col]));TABrow.appendChild(TABcell);}
-  TABtbody.appendChild(TABrow);}
-  nodeTmp.appendChild(TABtbody);}
-  newFrag.appendChild(nodeTmp);break;case"logicalbreak":var nodeTmp=document.createElement("p");nodeTmp.className=strtmparray[1];nodeTmp.appendChild(document.createTextNode("\u00A0"));newFrag.appendChild(nodeTmp);break;case"appendix":inAppendix=true;sectionCntr=0;break;case"alistitem":var EndDiv=document.createElement("div");EndDiv.className="endlistitem";newFrag.appendChild(EndDiv);var BegDiv=document.createElement("div");BegDiv.className="listitem";if(strtmparray[1]!=" "){var BegSpan=document.createElement("span");BegSpan.className="listitemmarker";var boldBegSpan=document.createElement("b");boldBegSpan.appendChild(document.createTextNode(strtmparray[1]+" "));BegSpan.appendChild(boldBegSpan);BegDiv.appendChild(BegSpan);}
-  newFrag.appendChild(BegDiv);break;case"br":newFrag.appendChild(document.createElement("br"));break;case"bibitem":newFrag.appendChild(document.createElement("br"));var nodeTmp=document.createElement("a");nodeTmp.className='bibitem';var nodeSpan=document.createElement("span");nodeSpan.className='bibitem';bibcntr++;var lbl=strtmparray[1].match(/\{\s*(\w+)\s*\}/);strtmparray[1]=strtmparray[1].replace(/\s*\{\s*\w+\s*\}/g,"");strtmparray[1]=strtmparray[1].replace(/^\s*\[/,"");strtmparray[1]=strtmparray[1].replace(/\s*\]$/,"");strtmparray[1]=strtmparray[1].replace(/^\s+|\s+$/g,"");if(lbl==null){biblist[bibcntr]="bibitem"+bibcntr}else{biblist[bibcntr]=lbl[1];};nodeTmp.name=biblist[bibcntr];nodeTmp.id=biblist[bibcntr];if(strtmparray[1]!=""){nodeSpan.appendChild(document.createTextNode(strtmparray[1]));}else{nodeSpan.appendChild(document.createTextNode("["+bibcntr+"]"));}
-  nodeTmp.appendChild(nodeSpan);newFrag.appendChild(nodeTmp);break;case"cite":var nodeTmp=document.createElement("a");nodeTmp.className='cite';nodeTmp.name='cite';nodeTmp.href="#"+strtmparray[1];newFrag.appendChild(nodeTmp);break;case"ref":var nodeTmp=document.createElement("a");nodeTmp.className='ref';nodeTmp.name='ref';nodeTmp.href="#"+strtmparray[1];newFrag.appendChild(nodeTmp);break;default:var nodeTmp=document.createElement("div");nodeTmp.className=strtmparray[0];if(IsCounter.test(strtmparray[0])){LaTeXCounter[strtmparray[0]]++;var nodeAnchor=document.createElement("a");nodeAnchor.className=strtmparray[0];var divnum=makeNumberString(LaTeXCounter[strtmparray[0]]);var anchorSpan=document.createElement("span");anchorSpan.className=strtmparray[0];anchorSpan.appendChild(document.createTextNode(divnum));anchorSpan.style.display="none";nodeAnchor.appendChild(anchorSpan);nodeTmp.appendChild(nodeAnchor);var nodeSpan=document.createElement("span");nodeSpan.className=strtmparray[0];nodeSpan.appendChild(document.createTextNode(strtmparray[1]+" "+divnum+". "));nodeTmp.appendChild(nodeSpan);}
-  if(isIE){if(strtmparray[0]==("thebibliography"||"abstract"||"keyword"||"proof")){var nodeSpan=document.createElement("span");nodeSpan.className=strtmparray[0];nodeSpan.appendChild(document.createTextNode(strtmparray[1]));nodeTmp.appendChild(nodeSpan);}}
-  if(strtmparray[0]=="endenumerate"||strtmparray[0]=="enditemize"||strtmparray[0]=="enddescription"){var endDiv=document.createElement("div");endDiv.className="endlistitem";newFrag.appendChild(endDiv);}
-  newFrag.appendChild(nodeTmp);if(strtmparray[0]=="enumerate"||strtmparray[0]=="itemize"||strtmparray[0]=="description"){var endDiv=document.createElement("div");endDiv.className="listitem";newFrag.appendChild(endDiv);}}}else{strtmp[j]=strtmp[j].replace(/\\\$/g,"<per>");strtmp[j]=strtmp[j].replace(/\$([^\$]+)\$/g," \\[$1\\[ ");strtmp[j]=strtmp[j].replace(/<per>/g,"\\$");strtmp[j]=strtmp[j].replace(/\\begin\s*\{\s*math\s*\}([\s\S]+?)\\end\s*\{\s*math\s*\}/g," \\[$1\\[ ");var strtmptmp=strtmp[j].split("\\[");for(var jjj=0;jjj<strtmptmp.length;jjj++){if(jjj%2){var nodeTmp=document.createElement("span");nodeTmp.className='inlinemath';nodeTmp.appendChild(document.createTextNode("$"+strtmptmp[jjj]+"$"));newFrag.appendChild(nodeTmp);}else{var TagIndex=strtmptmp[jjj].search(/\\\w+/);var tmpIndex=TagIndex;while(tmpIndex>-1){if(/^\\textcolor/.test(strtmptmp[jjj].substring(TagIndex,strtmptmp[jjj].length))){strtmptmp[jjj]=strtmptmp[jjj].replace(/\\textcolor\s*\{\s*(\w+)\s*\}\s*/," \\[textcolor\\]$1\\]|");}else{if(/^\\colorbox/.test(strtmptmp[jjj].substring(TagIndex,strtmptmp[jjj].length))){strtmptmp[jjj]=strtmptmp[jjj].replace(/\\colorbox\s*\{\s*(\w+)\s*\}\s*/," \\[colorbox\\]$1\\]|");}else{strtmptmp[jjj]=strtmptmp[jjj].substring(0,TagIndex)+strtmptmp[jjj].substring(TagIndex,strtmptmp[jjj].length).replace(/\\\s*(\w+)\s*/," \\[$1\\]|");}}
-  TagIndex+=strtmptmp[jjj].substring(TagIndex,strtmptmp[jjj].length).search(/\|/);TagIndex++;strtmptmp[jjj]=strtmptmp[jjj].replace(/\\\]\|/,"\\] ");if(strtmptmp[jjj].charAt(TagIndex)=="{"){strtmptmp[jjj]=strtmptmp[jjj].substring(0,TagIndex)+strtmptmp[jjj].substring(TagIndex+1,strtmptmp[jjj].length);var delimcnt=1;for(var kk=TagIndex;kk<strtmptmp[jjj].length;kk++){if(strtmptmp[jjj].charAt(kk)=="{"){delimcnt++};if(strtmptmp[jjj].charAt(kk)=="}"){delimcnt--};if(delimcnt==0){break;}}
-  strtmptmp[jjj]=strtmptmp[jjj].substring(0,kk)+"\\[ "+strtmptmp[jjj].substring(kk+1,strtmptmp[jjj].length);TagIndex=kk+3;}else{strtmptmp[jjj]=strtmptmp[jjj].substring(0,TagIndex)+"\\[ "+strtmptmp[jjj].substring(TagIndex+1,strtmptmp[jjj].length);TagIndex=TagIndex+3;}
-  if(TagIndex<strtmptmp[jjj].length){tmpIndex=strtmptmp[jjj].substring(TagIndex,strtmptmp[jjj].length).search(/\\\w+/);}
-  else{tmpIndex=-1};TagIndex+=tmpIndex;}
-  strtmptmp[jjj]=strtmptmp[jjj].replace(/\\\\\s*\\\\/g,"\\\\");strtmptmp[jjj]=strtmptmp[jjj].replace(/\\\\/g," \\[br\\] \\[ ");strtmptmp[jjj]=strtmptmp[jjj].replace(/\\label\s*\{\s*(\w+)\s*\}/g," \\[a\\]$1\\[ ");var strlbls=strtmptmp[jjj].split("\\[");for(var jj=0;jj<strlbls.length;jj++){if(jj%2){var strtmparray=strlbls[jj].split("\\]");switch(strtmparray[0]){case"textcolor":var nodeTmp=document.createElement("span");nodeTmp.className='LaTeXColor';if(IsColorName.test(strtmparray[1].toLowerCase())){nodeTmp.style.color=LaTeXColor[strtmparray[1].toLowerCase()];}else{nodeTmp.style.color=strtmparray[1];};nodeTmp.appendChild(document.createTextNode(strtmparray[2]));newFrag.appendChild(nodeTmp);break;case"colorbox":var nodeTmp=document.createElement("span");nodeTmp.className='LaTeXColor';if(IsColorName.test(strtmparray[1].toLowerCase())){nodeTmp.style.background=LaTeXColor[strtmparray[1].toLowerCase()];}else{nodeTmp.style.background=strtmparray[1];};nodeTmp.appendChild(document.createTextNode(strtmparray[2]));newFrag.appendChild(nodeTmp);break;case"br":newFrag.appendChild(document.createElement("br"));break;case"a":var nodeTmp=document.createElement("a");nodeTmp.className='LaTeXMathMLlabel';nodeTmp.id=strtmparray[1];nodeTmp.style.display="none";newFrag.appendChild(nodeTmp);break;default:var nodeTmp=document.createElement("span");nodeTmp.className=strtmparray[0];nodeTmp.appendChild(document.createTextNode(strtmparray[1]))
-  newFrag.appendChild(nodeTmp);}}else{newFrag.appendChild(document.createTextNode(strlbls[jj]));}}}}}}}};TheBody.parentNode.replaceChild(newFrag,TheBody);}}}
-  return TheBody;}
-  function LaTeXDivsAndRefs(thebody){var TheBody=thebody;var EndDivClass=null;var AllDivs=TheBody.getElementsByTagName("div");var lbl2id="";var lblnode=null;for(var i=AllDivs.length-1;i>=0;i--){EndDivClass=AllDivs[i].className.match(/end\w+/);if(EndDivClass!=null){EndDivClass=EndDivClass[0];var DivClass=EndDivClass.substring(3,EndDivClass.length);var EndDivNode=AllDivs[i];break;}}
-  while(EndDivClass!=null){var newFrag=document.createDocumentFragment();var RootNode=EndDivNode.parentNode;var ClassCount=1;while(EndDivNode.previousSibling!=null&&ClassCount>0){switch(EndDivNode.previousSibling.className){case EndDivClass:ClassCount++;newFrag.insertBefore(EndDivNode.previousSibling,newFrag.firstChild);break;case DivClass:if(EndDivNode.previousSibling.nodeName=="DIV"){ClassCount--;if(lbl2id!=""){EndDivNode.previousSibling.id=lbl2id;lbl2id=""}
-  if(ClassCount==0){RootNode=EndDivNode.previousSibling;}else{newFrag.insertBefore(EndDivNode.previousSibling,newFrag.firstChild);}};break;case'LaTeXMathMLlabel':lbl2id=EndDivNode.previousSibling.id;EndDivNode.parentNode.removeChild(EndDivNode.previousSibling);break;default:newFrag.insertBefore(EndDivNode.previousSibling,newFrag.firstChild);}}
-  RootNode.appendChild(newFrag);EndDivNode.parentNode.removeChild(EndDivNode);AllDivs=TheBody.getElementsByTagName("DIV");for(i=AllDivs.length-1;i>=0;i--){EndDivClass=AllDivs[i].className.match(/end\w+/);if(EndDivClass!=null){ClassCount=0;EndDivClass=EndDivClass[0];DivClass=EndDivClass.substring(3,EndDivClass.length);EndDivNode=AllDivs[i];RootNode=EndDivNode.parentNode;break;}}}
-  var AllDivs=TheBody.getElementsByTagName("div");var DIV2LI=null;for(var i=0;i<AllDivs.length;i++){if(AllDivs[i].className=="itemize"||AllDivs[i].className=="enumerate"||AllDivs[i].className=="description"){if(AllDivs[i].className=="itemize"){RootNode=document.createElement("UL");}else{RootNode=document.createElement("OL");}
-  RootNode.className='LaTeXMathML';if(AllDivs[i].hasChildNodes()){AllDivs[i].removeChild(AllDivs[i].firstChild)};while(AllDivs[i].hasChildNodes()){if(AllDivs[i].firstChild.hasChildNodes()){DIV2LI=document.createElement("LI");while(AllDivs[i].firstChild.hasChildNodes()){DIV2LI.appendChild(AllDivs[i].firstChild.firstChild);}
-  if(DIV2LI.firstChild.className=="listitemmarker"){DIV2LI.style.listStyleType="none";}
-  RootNode.appendChild(DIV2LI)}
-  AllDivs[i].removeChild(AllDivs[i].firstChild);}
-  AllDivs[i].appendChild(RootNode);}}
-  var AllAnchors=TheBody.getElementsByTagName("a");for(var i=0;i<AllAnchors.length;i++){if(AllAnchors[i].className=="ref"||AllAnchors[i].className=="cite"){var label=AllAnchors[i].href.match(/\#(\w+)/);if(label!=null){var labelNode=document.getElementById(label[1]);if(labelNode!=null){var TheSpans=labelNode.getElementsByTagName("SPAN");if(TheSpans!=null){var refNode=TheSpans[0].cloneNode(true);refNode.style.display="inline"
-  refNode.className=AllAnchors[i].className;AllAnchors[i].appendChild(refNode);}}}}}
-  return TheBody;}
-  var AMbody;var AMnoMathML=false,AMtranslated=false;function translate(spanclassAM){if(!AMtranslated){AMtranslated=true;AMinitSymbols();var LaTeXContainers=[];var AllContainers=document.getElementsByTagName('*');var ExtendName="";for(var k=0,l=0;k<AllContainers.length;k++){ExtendName=" "+AllContainers[k].className+" ";if(ExtendName.match(/\sLaTeX\s/)!=null){LaTeXContainers[l]=AllContainers[k];l++;}};if(LaTeXContainers.length>0){for(var m=0;m<LaTeXContainers.length;m++){AMbody=LaTeXContainers[m];try{AMbody=LaTeXDivsAndRefs(LaTeXpreProcess(AMbody));}catch(err){alert("Unknown Error: Defaulting to Original LaTeXMathML");}
-  if(AMbody.tagName=="PRE"){var PreChilds=document.createDocumentFragment();var DivChilds=document.createElement("DIV");while(AMbody.hasChildNodes()){DivChilds.appendChild(AMbody.firstChild);}
-  PreChilds.appendChild(DivChilds);AMbody.parentNode.replaceChild(PreChilds,AMbody);AMbody=DivChilds;}
-  AMprocessNode(AMbody,false,spanclassAM);}}else{AMbody=document.getElementsByTagName("body")[0];try{AMbody=LaTeXDivsAndRefs(LaTeXpreProcess(AMbody));}catch(err){alert("Unknown Error: Defaulting to Original LaTeXMathML");}
-  AMprocessNode(AMbody,false,spanclassAM);}}}
-  if(isIE){document.write("<object id=\"mathplayer\" classid=\"clsid:32F66A20-7614-11D4-BD11-00104BD3F987\"></object>");document.write("<?import namespace=\"m\" implementation=\"#mathplayer\"?>");}
-  function generic()
-  {translate();};if(typeof window.addEventListener!='undefined')
-  {window.addEventListener('load',generic,false);}
-  else if(typeof document.addEventListener!='undefined')
-  {document.addEventListener('load',generic,false);}
-  else if(typeof window.attachEvent!='undefined')
-  {window.attachEvent('onload',generic);}
-  else
-  {if(typeof window.onload=='function')
-  {var existing=onload;window.onload=function()
-  {existing();generic();};}
-  else
-  {window.onload=generic;}}
-  /*]]>*/
-  </script>
-  <script src="http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz"
-    charset="utf-8" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<title>The Problem</title>
+
+<base target="_blank"/>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+<!-- Styles for R syntax highlighter -->
+<style type="text/css">
+   pre .operator,
+   pre .paren {
+     color: rgb(104, 118, 135)
+   }
+
+   pre .literal {
+     color: rgb(88, 72, 246)
+   }
+
+   pre .number {
+     color: rgb(0, 0, 205);
+   }
+
+   pre .comment {
+     color: rgb(76, 136, 107);
+   }
+
+   pre .keyword {
+     color: rgb(0, 0, 255);
+   }
+
+   pre .identifier {
+     color: rgb(0, 0, 0);
+   }
+
+   pre .string {
+     color: rgb(3, 106, 7);
+   }
+</style>
+
+<!-- R syntax highlighter -->
+<script type="text/javascript">
+var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/</gm,"&lt;")}function f(r,q,p){return RegExp(q,"m"+(r.cI?"i":"")+(p?"g":""))}function b(r){for(var p=0;p<r.childNodes.length;p++){var q=r.childNodes[p];if(q.nodeName=="CODE"){return q}if(!(q.nodeType==3&&q.nodeValue.match(/\s+/))){break}}}function h(t,s){var p="";for(var r=0;r<t.childNodes.length;r++){if(t.childNodes[r].nodeType==3){var q=t.childNodes[r].nodeValue;if(s){q=q.replace(/\n/g,"")}p+=q}else{if(t.childNodes[r].nodeName=="BR"){p+="\n"}else{p+=h(t.childNodes[r])}}}if(/MSIE [678]/.test(navigator.userAgent)){p=p.replace(/\r/g,"\n")}return p}function a(s){var r=s.className.split(/\s+/);r=r.concat(s.parentNode.className.split(/\s+/));for(var q=0;q<r.length;q++){var p=r[q].replace(/^language-/,"");if(e[p]){return p}}}function c(q){var p=[];(function(s,t){for(var r=0;r<s.childNodes.length;r++){if(s.childNodes[r].nodeType==3){t+=s.childNodes[r].nodeValue.length}else{if(s.childNodes[r].nodeName=="BR"){t+=1}else{if(s.childNodes[r].nodeType==1){p.push({event:"start",offset:t,node:s.childNodes[r]});t=arguments.callee(s.childNodes[r],t);p.push({event:"stop",offset:t,node:s.childNodes[r]})}}}}return t})(q,0);return p}function k(y,w,x){var q=0;var z="";var s=[];function u(){if(y.length&&w.length){if(y[0].offset!=w[0].offset){return(y[0].offset<w[0].offset)?y:w}else{return w[0].event=="start"?y:w}}else{return y.length?y:w}}function t(D){var A="<"+D.nodeName.toLowerCase();for(var B=0;B<D.attributes.length;B++){var C=D.attributes[B];A+=" "+C.nodeName.toLowerCase();if(C.value!==undefined&&C.value!==false&&C.value!==null){A+='="'+m(C.value)+'"'}}return A+">"}while(y.length||w.length){var v=u().splice(0,1)[0];z+=m(x.substr(q,v.offset-q));q=v.offset;if(v.event=="start"){z+=t(v.node);s.push(v.node)}else{if(v.event=="stop"){var p,r=s.length;do{r--;p=s[r];z+=("</"+p.nodeName.toLowerCase()+">")}while(p!=v.node);s.splice(r,1);while(r<s.length){z+=t(s[r]);r++}}}}return z+m(x.substr(q))}function j(){function q(x,y,v){if(x.compiled){return}var u;var s=[];if(x.k){x.lR=f(y,x.l||hljs.IR,true);for(var w in x.k){if(!x.k.hasOwnProperty(w)){continue}if(x.k[w] instanceof Object){u=x.k[w]}else{u=x.k;w="keyword"}for(var r in u){if(!u.hasOwnProperty(r)){continue}x.k[r]=[w,u[r]];s.push(r)}}}if(!v){if(x.bWK){x.b="\\b("+s.join("|")+")\\s"}x.bR=f(y,x.b?x.b:"\\B|\\b");if(!x.e&&!x.eW){x.e="\\B|\\b"}if(x.e){x.eR=f(y,x.e)}}if(x.i){x.iR=f(y,x.i)}if(x.r===undefined){x.r=1}if(!x.c){x.c=[]}x.compiled=true;for(var t=0;t<x.c.length;t++){if(x.c[t]=="self"){x.c[t]=x}q(x.c[t],y,false)}if(x.starts){q(x.starts,y,false)}}for(var p in e){if(!e.hasOwnProperty(p)){continue}q(e[p].dM,e[p],true)}}function d(B,C){if(!j.called){j();j.called=true}function q(r,M){for(var L=0;L<M.c.length;L++){if((M.c[L].bR.exec(r)||[null])[0]==r){return M.c[L]}}}function v(L,r){if(D[L].e&&D[L].eR.test(r)){return 1}if(D[L].eW){var M=v(L-1,r);return M?M+1:0}return 0}function w(r,L){return L.i&&L.iR.test(r)}function K(N,O){var M=[];for(var L=0;L<N.c.length;L++){M.push(N.c[L].b)}var r=D.length-1;do{if(D[r].e){M.push(D[r].e)}r--}while(D[r+1].eW);if(N.i){M.push(N.i)}return f(O,M.join("|"),true)}function p(M,L){var N=D[D.length-1];if(!N.t){N.t=K(N,E)}N.t.lastIndex=L;var r=N.t.exec(M);return r?[M.substr(L,r.index-L),r[0],false]:[M.substr(L),"",true]}function z(N,r){var L=E.cI?r[0].toLowerCase():r[0];var M=N.k[L];if(M&&M instanceof Array){return M}return false}function F(L,P){L=m(L);if(!P.k){return L}var r="";var O=0;P.lR.lastIndex=0;var M=P.lR.exec(L);while(M){r+=L.substr(O,M.index-O);var N=z(P,M);if(N){x+=N[1];r+='<span class="'+N[0]+'">'+M[0]+"</span>"}else{r+=M[0]}O=P.lR.lastIndex;M=P.lR.exec(L)}return r+L.substr(O,L.length-O)}function J(L,M){if(M.sL&&e[M.sL]){var r=d(M.sL,L);x+=r.keyword_count;return r.value}else{return F(L,M)}}function I(M,r){var L=M.cN?'<span class="'+M.cN+'">':"";if(M.rB){y+=L;M.buffer=""}else{if(M.eB){y+=m(r)+L;M.buffer=""}else{y+=L;M.buffer=r}}D.push(M);A+=M.r}function G(N,M,Q){var R=D[D.length-1];if(Q){y+=J(R.buffer+N,R);return false}var P=q(M,R);if(P){y+=J(R.buffer+N,R);I(P,M);return P.rB}var L=v(D.length-1,M);if(L){var O=R.cN?"</span>":"";if(R.rE){y+=J(R.buffer+N,R)+O}else{if(R.eE){y+=J(R.buffer+N,R)+O+m(M)}else{y+=J(R.buffer+N+M,R)+O}}while(L>1){O=D[D.length-2].cN?"</span>":"";y+=O;L--;D.length--}var r=D[D.length-1];D.length--;D[D.length-1].buffer="";if(r.starts){I(r.starts,"")}return R.rE}if(w(M,R)){throw"Illegal"}}var E=e[B];var D=[E.dM];var A=0;var x=0;var y="";try{var s,u=0;E.dM.buffer="";do{s=p(C,u);var t=G(s[0],s[1],s[2]);u+=s[0].length;if(!t){u+=s[1].length}}while(!s[2]);if(D.length>1){throw"Illegal"}return{r:A,keyword_count:x,value:y}}catch(H){if(H=="Illegal"){return{r:0,keyword_count:0,value:m(C)}}else{throw H}}}function g(t){var p={keyword_count:0,r:0,value:m(t)};var r=p;for(var q in e){if(!e.hasOwnProperty(q)){continue}var s=d(q,t);s.language=q;if(s.keyword_count+s.r>r.keyword_count+r.r){r=s}if(s.keyword_count+s.r>p.keyword_count+p.r){r=p;p=s}}if(r.language){p.second_best=r}return p}function i(r,q,p){if(q){r=r.replace(/^((<[^>]+>|\t)+)/gm,function(t,w,v,u){return w.replace(/\t/g,q)})}if(p){r=r.replace(/\n/g,"<br>")}return r}function n(t,w,r){var x=h(t,r);var v=a(t);var y,s;if(v){y=d(v,x)}else{return}var q=c(t);if(q.length){s=document.createElement("pre");s.innerHTML=y.value;y.value=k(q,c(s),x)}y.value=i(y.value,w,r);var u=t.className;if(!u.match("(\\s|^)(language-)?"+v+"(\\s|$)")){u=u?(u+" "+v):v}if(/MSIE [678]/.test(navigator.userAgent)&&t.tagName=="CODE"&&t.parentNode.tagName=="PRE"){s=t.parentNode;var p=document.createElement("div");p.innerHTML="<pre><code>"+y.value+"</code></pre>";t=p.firstChild.firstChild;p.firstChild.cN=s.cN;s.parentNode.replaceChild(p.firstChild,s)}else{t.innerHTML=y.value}t.className=u;t.result={language:v,kw:y.keyword_count,re:y.r};if(y.second_best){t.second_best={language:y.second_best.language,kw:y.second_best.keyword_count,re:y.second_best.r}}}function o(){if(o.called){return}o.called=true;var r=document.getElementsByTagName("pre");for(var p=0;p<r.length;p++){var q=b(r[p]);if(q){n(q,hljs.tabReplace)}}}function l(){if(window.addEventListener){window.addEventListener("DOMContentLoaded",o,false);window.addEventListener("load",o,false)}else{if(window.attachEvent){window.attachEvent("onload",o)}else{window.onload=o}}}var e={};this.LANGUAGES=e;this.highlight=d;this.highlightAuto=g;this.fixMarkup=i;this.highlightBlock=n;this.initHighlighting=o;this.initHighlightingOnLoad=l;this.IR="[a-zA-Z][a-zA-Z0-9_]*";this.UIR="[a-zA-Z_][a-zA-Z0-9_]*";this.NR="\\b\\d+(\\.\\d+)?";this.CNR="\\b(0[xX][a-fA-F0-9]+|(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)";this.BNR="\\b(0b[01]+)";this.RSR="!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|\\.|-|-=|/|/=|:|;|<|<<|<<=|<=|=|==|===|>|>=|>>|>>=|>>>|>>>=|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~";this.ER="(?![\\s\\S])";this.BE={b:"\\\\.",r:0};this.ASM={cN:"string",b:"'",e:"'",i:"\\n",c:[this.BE],r:0};this.QSM={cN:"string",b:'"',e:'"',i:"\\n",c:[this.BE],r:0};this.CLCM={cN:"comment",b:"//",e:"$"};this.CBLCLM={cN:"comment",b:"/\\*",e:"\\*/"};this.HCM={cN:"comment",b:"#",e:"$"};this.NM={cN:"number",b:this.NR,r:0};this.CNM={cN:"number",b:this.CNR,r:0};this.BNM={cN:"number",b:this.BNR,r:0};this.inherit=function(r,s){var p={};for(var q in r){p[q]=r[q]}if(s){for(var q in s){p[q]=s[q]}}return p}}();hljs.LANGUAGES.cpp=function(){var a={keyword:{"false":1,"int":1,"float":1,"while":1,"private":1,"char":1,"catch":1,"export":1,virtual:1,operator:2,sizeof:2,dynamic_cast:2,typedef:2,const_cast:2,"const":1,struct:1,"for":1,static_cast:2,union:1,namespace:1,unsigned:1,"long":1,"throw":1,"volatile":2,"static":1,"protected":1,bool:1,template:1,mutable:1,"if":1,"public":1,friend:2,"do":1,"return":1,"goto":1,auto:1,"void":2,"enum":1,"else":1,"break":1,"new":1,extern:1,using:1,"true":1,"class":1,asm:1,"case":1,typeid:1,"short":1,reinterpret_cast:2,"default":1,"double":1,register:1,explicit:1,signed:1,typename:1,"try":1,"this":1,"switch":1,"continue":1,wchar_t:1,inline:1,"delete":1,alignof:1,char16_t:1,char32_t:1,constexpr:1,decltype:1,noexcept:1,nullptr:1,static_assert:1,thread_local:1,restrict:1,_Bool:1,complex:1},built_in:{std:1,string:1,cin:1,cout:1,cerr:1,clog:1,stringstream:1,istringstream:1,ostringstream:1,auto_ptr:1,deque:1,list:1,queue:1,stack:1,vector:1,map:1,set:1,bitset:1,multiset:1,multimap:1,unordered_set:1,unordered_map:1,unordered_multiset:1,unordered_multimap:1,array:1,shared_ptr:1}};return{dM:{k:a,i:"</",c:[hljs.CLCM,hljs.CBLCLM,hljs.QSM,{cN:"string",b:"'\\\\?.",e:"'",i:"."},{cN:"number",b:"\\b(\\d+(\\.\\d*)?|\\.\\d+)(u|U|l|L|ul|UL|f|F)"},hljs.CNM,{cN:"preprocessor",b:"#",e:"$"},{cN:"stl_container",b:"\\b(deque|list|queue|stack|vector|map|set|bitset|multiset|multimap|unordered_map|unordered_set|unordered_multiset|unordered_multimap|array)\\s*<",e:">",k:a,r:10,c:["self"]}]}}}();hljs.LANGUAGES.r={dM:{c:[hljs.HCM,{cN:"number",b:"\\b0[xX][0-9a-fA-F]+[Li]?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+(?:[eE][+\\-]?\\d*)?L\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+\\.(?!\\d)(?:i\\b)?",e:hljs.IMMEDIATE_RE,r:1},{cN:"number",b:"\\b\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"keyword",b:"(?:tryCatch|library|setGeneric|setGroupGeneric)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\.",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\d+(?![\\w.])",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\b(?:function)",e:hljs.IMMEDIATE_RE,r:2},{cN:"keyword",b:"(?:if|in|break|next|repeat|else|for|return|switch|while|try|stop|warning|require|attach|detach|source|setMethod|setClass)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"literal",b:"(?:NA|NA_integer_|NA_real_|NA_character_|NA_complex_)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"literal",b:"(?:NULL|TRUE|FALSE|T|F|Inf|NaN)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"identifier",b:"[a-zA-Z.][a-zA-Z0-9._]*\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"<\\-(?!\\s*\\d)",e:hljs.IMMEDIATE_RE,r:2},{cN:"operator",b:"\\->|<\\-",e:hljs.IMMEDIATE_RE,r:1},{cN:"operator",b:"%%|~",e:hljs.IMMEDIATE_RE},{cN:"operator",b:">=|<=|==|!=|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||\\$|:",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"%",e:"%",i:"\\n",r:1},{cN:"identifier",b:"`",e:"`",r:0},{cN:"string",b:'"',e:'"',c:[hljs.BE],r:0},{cN:"string",b:"'",e:"'",c:[hljs.BE],r:0},{cN:"paren",b:"[[({\\])}]",e:hljs.IMMEDIATE_RE,r:0}]}};
+hljs.initHighlightingOnLoad();
+</script>
+
+
+<!-- MathJax scripts -->
+<script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
 </head>
+
 <body>
-<div class="slide titlepage">
-  <h1 class="title">Strategies for Handling Missing Data</h1>
-  <p class="author">
-Stephen Haptonstahl<br/>Berico Technologies
-  </p>
-  <p class="date">2012/08/30</p>
-</div>
-<div class="section titleslide slide level1" id="the-problem"><h1>The Problem</h1></div><div class="section slide level2" id="data-in-theory">
-<h1>Data, in theory</h1>
-<!-- Compile with: pandoc -i -s -S -toc --latexmathml -t slidy -o HandlingMissingData.html HandlingMissingData.md -->
+<p>% Strategies for<br/>
+  Handling Missing Data<br/>
+% Stephen Haptonstahl<br/>
+  Berico Technologies<br/>
+% 2012/08/30</p>
+
+<h1>The Problem</h1>
+
+<h2>Data, in theory</h2>
+
+<!-- 
+Compile to HTML5 with: 
+  
+  pandoc -i -s -S -toc --latexmathml -t slidy -o HandlingMissingData.html HandlingMissingData.md 
+  
+Compile to PDF of Beamer slides with:
+  
+  pandoc -i -s -S -toc -t beamer -o HandlingMissingData.pdf HandlingMissingData.md
+
+-->
 
 <p>Suppose we want to mine sales records to see what kind of customer buys more from us.</p>
-<table>
-<thead>
-<tr class="header">
-<th align="right">sales</th>
-<th align="center">female</th>
-<th align="center">education</th>
-<th align="right">income</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="right">1209</td>
-<td align="center">0</td>
-<td align="center">high school</td>
-<td align="right">35000</td>
-</tr>
-<tr class="even">
-<td align="right">2587</td>
-<td align="center">1</td>
-<td align="center">4yr degree</td>
-<td align="right">45000</td>
-</tr>
-<tr class="odd">
-<td align="right">13265</td>
-<td align="center">1</td>
-<td align="center">grad degree</td>
-<td align="right">65000</td>
-</tr>
-<tr class="even">
-<td align="right">2298</td>
-<td align="center">0</td>
-<td align="center">some college</td>
-<td align="right">49000</td>
-</tr>
-</tbody>
-</table>
-</div><div class="section slide level2" id="data-in-practice">
-<h1>Data, in practice</h1>
+
+<p>sales  female   education     income</p>
+
+<hr/>
+
+<p>1209    0       high school 35000<br/>
+  2587    1       4yr degree   45000<br/>
+ 13265    1       grad degree  65000<br/>
+  2298    0       some college 49000</p>
+
+<h2>Data, in practice</h2>
+
 <p>Suppose we want to mine sales records to see what kind of customer buys more from us.</p>
-<table>
-<thead>
-<tr class="header">
-<th align="right">sales</th>
-<th align="center">female</th>
-<th align="center">education</th>
-<th align="right">income</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="right">1209</td>
-<td align="center">0</td>
-<td align="center">high school</td>
-<td align="right">35000</td>
-</tr>
-<tr class="even">
-<td align="right">2587</td>
-<td align="center">NA</td>
-<td align="center">4yr degree</td>
-<td align="right">45000</td>
-</tr>
-<tr class="odd">
-<td align="right">13265</td>
-<td align="center">1</td>
-<td align="center">NA</td>
-<td align="right">65000</td>
-</tr>
-<tr class="even">
-<td align="right">NA</td>
-<td align="center">0</td>
-<td align="center">some college</td>
-<td align="right">49000</td>
-</tr>
-</tbody>
-</table>
-</div><div class="section slide level2" id="who-cares">
-<h1>Who cares?</h1>
-<ul class="incremental">
+
+<p>sales  female   education     income</p>
+
+<hr/>
+
+<p>1209    0       high school  35000<br/>
+  2587    NA      4yr degree   45000<br/>
+ 13265    1       NA           65000<br/>
+    NA    0       some college 49000</p>
+
+<h2>Who cares?</h2>
+
+<ul>
 <li>Best case if you ignore missing data: throwing away data</li>
 <li>Same as loss of efficiency</li>
 <li>Less certainty (less statistical significance)</li>
 <li><strong>Some patterns will be completely missed</strong></li>
-<li>Data scientists are replaced by equally incompetent algorithms, ie.</li>
+<li>Data scientists are replaced by equally incompetent algorithms, ie. </li>
 <li>Mass hysteria</li>
 </ul>
-</div><div class="section slide level2" id="todays-talk">
-<h1>Today’s talk</h1>
+
+<h2>Today&#39;s talk</h2>
+
 <!-- * [The Problem](#The-Problem) -->
 
-<ul class="incremental">
+<ul>
 <li>The Problem</li>
 <li>Typical Method Versus a Better Method</li>
 <li>Naive Imputation</li>
 <li>Home-Rolled Imputation</li>
 <li>Existing Tools
-<ul class="incremental">
+
+<ul>
 <li>Small Data Sets</li>
 <li>Large Data Sets</li>
 <li>Real-time</li>
@@ -350,362 +259,265 @@ Stephen Haptonstahl<br/>Berico Technologies
 <li>When Imputation Fails</li>
 <li>Fin</li>
 </ul>
-</div>
-<div class="section titleslide slide level1" id="typical-method-versus-a-better-method"><h1>Typical Method Versus a Better Method</h1></div><div class="section slide level2" id="the-evil-that-is-row-deletion">
-<h1>(The Evil that is) Row Deletion</h1>
-<ul class="incremental">
+
+<h1>Typical Method Versus a Better Method</h1>
+
+<h2>(The Evil that is) Row Deletion</h2>
+
+<ul>
 <li>Idea: Only include full rows in the analysis.</li>
 <li>This is the most common method.
-<ul class="incremental">
+
+<ul>
 <li>Default for most software, inluding <tt>lm</tt> and other <tt>R</tt> functions.</li>
 </ul></li>
 <li>Throws away data, perhaps a lot.
-<ul class="incremental">
+
+<ul>
 <li>Ex: 50 fields for each customer</li>
 <li>How many have all 50 observed? (Ans: none except test data)</li>
 </ul></li>
 <li><strong>Some patterns will be completely missed</strong></li>
 <li>We know where this leads</li>
 </ul>
-</div><div class="section slide level2" id="what-is-imputation">
-<h1>What is imputation?</h1>
-<dl class="incremental">
-<dt>Imputation</dt>
-<dd>Filling in missing data with guesses, good or bad, for what would have been observed.
-</dd>
-</dl>
-<ul class="incremental">
-<li>Example 1: “These scientists all say the earth is warming, but today it’s cold. They must be in a conspiracy!”</li>
-<li>Example 2: “These scientists all say the earth is warming, but today it’s cold. Perhaps they only measured on warm days.”</li>
+
+<h2>What is imputation?</h2>
+
+<p>Imputation</p>
+
+<p>:    Filling in missing data with guesses, good or bad, for what would have been observed.</p>
+
+<ul>
+<li>Example 1: &ldquo;These scientists all say the earth is warming, but today it&#39;s cold.  They must be in a conspiracy!&rdquo;</li>
+<li>Example 2: &ldquo;These scientists all say the earth is warming, but today it&#39;s cold.  Perhaps they only measured on warm days.&rdquo;</li>
 <li>Both are wrong, but one is a better (more likely to be true) guess than the other.</li>
 <li>The better guess will be less likely to lead you to bad decisions, algorithms, hysteria, etc.</li>
 </ul>
-</div><div class="section slide level2" id="when-is-imputation-bad">
-<h1>When is imputation bad</h1>
+
+<h2>When is imputation bad</h2>
+
 <blockquote>
-<p>If only we knew what was there. Then we would be able to make a good guess at what was there.</p>
+<p>If only we knew what was there.  Then we would be able to make a good guess at what was there.</p>
 </blockquote>
-<ul class="incremental">
+
+<ul>
 <li>Missingness process <strong>not ignorable</strong>, which means</li>
 <li>Missingness depends on unobserved data</li>
 <li>Types of data-generating processes
-<ol class="incremental" style="list-style-type: decimal">
+
+<ol>
 <li>Missing Completely At Random (MCAR): <em>no data</em> will help you predict which values are missing
-<ul class="incremental">
+
+<ul>
 <li>Random noise</li>
 </ul></li>
 <li>Missing at Random (MAR): <em>observed values</em> can help you predict which values are missing
-<ul class="incremental">
+
+<ul>
 <li>Faulty switches</li>
 </ul></li>
 <li>Not ignorable (NMAR): <em>unobserved values</em> can help you predict which values are missing
-<ul class="incremental">
+
+<ul>
 <li>Losses reported as zero income (censored)</li>
 </ul></li>
 </ol></li>
 <li>Imputing when missingness is not ignorable leads to bias, bad decisions, etc.</li>
-<li>cf. Donald Rubin (1976)</li>
+<li>cf. Donald Rubin (1976)</li>
 </ul>
-</div>
-<div class="section titleslide slide level1" id="naive-imputation"><h1>Naive Imputation</h1></div><div class="section slide level2" id="mean-median-mode">
-<h1>Mean, Median, Mode</h1>
+
+<h1>Naive Imputation</h1>
+
+<h2>Mean, Median, Mode</h2>
+
 <blockquote>
 <p>We just filled in the missing values with zero.</p>
 </blockquote>
+
 <p>How we guess (hopefully) depends on what we expect to be there.</p>
-<ul class="incremental">
+
+<ul>
 <li>Continuous variable
-<ul class="incremental">
+
+<ul>
 <li>floating point</li>
 <li>Use <tt>mean</tt></li>
 </ul></li>
 <li>Ordinal (disagree, neither agree nor disagree, agree): <tt>median</tt></li>
 <li>Count (or other integer): <tt>median</tt></li>
 <li><p>Categorical (states; colors): mode</p>
+
 <p><tt>StatMode &lt;- function(x) names(table(x))[which.max(table(x))]</tt></p></li>
 </ul>
-</div><div class="section slide level2" id="mean-median-mode-continued">
-<h1>Mean, Median, Mode (continued)</h1>
+
+<h2>Mean, Median, Mode (continued)</h2>
+
 <p>Suppose we want to mine sales records to see what kind of customer buys more from us.</p>
-<table>
-<thead>
-<tr class="header">
-<th align="right">sales</th>
-<th align="center">female</th>
-<th align="center">education</th>
-<th align="right">income</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="right">1209</td>
-<td align="center">0</td>
-<td align="center">high school</td>
-<td align="right">35000</td>
-</tr>
-<tr class="even">
-<td align="right">2587</td>
-<td align="center">NA</td>
-<td align="center">4yr degree</td>
-<td align="right">45000</td>
-</tr>
-<tr class="odd">
-<td align="right">13265</td>
-<td align="center">1</td>
-<td align="center">NA</td>
-<td align="right">65000</td>
-</tr>
-<tr class="even">
-<td align="right">NA</td>
-<td align="center">0</td>
-<td align="center">some college</td>
-<td align="right">49000</td>
-</tr>
-</tbody>
-</table>
-</div><div class="section slide level2" id="mean-median-mode-continued-1">
-<h1>Mean, Median, Mode (continued)</h1>
+
+<p>sales  female   education     income</p>
+
+<hr/>
+
+<p>1209    0       high school  35000<br/>
+  2587    NA      4yr degree   45000<br/>
+ 13265    1       NA           65000<br/>
+    NA    0       some college 49000</p>
+
+<h2>Mean, Median, Mode (continued)</h2>
+
 <p>Suppose we want to mine sales records to see what kind of customer buys more from us.</p>
-<table>
-<thead>
-<tr class="header">
-<th align="right">sales</th>
-<th align="center">female</th>
-<th align="center">education</th>
-<th align="right">income</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="right">1209</td>
-<td align="center">0</td>
-<td align="center">high school</td>
-<td align="right">35000</td>
-</tr>
-<tr class="even">
-<td align="right">2587</td>
-<td align="center">0</td>
-<td align="center">4yr degree</td>
-<td align="right">45000</td>
-</tr>
-<tr class="odd">
-<td align="right">13265</td>
-<td align="center">1</td>
-<td align="center">some college</td>
-<td align="right">65000</td>
-</tr>
-<tr class="even">
-<td align="right">5687</td>
-<td align="center">0</td>
-<td align="center">some college</td>
-<td align="right">49000</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr class="header">
-<th align="right">mean</th>
-<th align="right">mode</th>
-<th align="right">median</th>
-<th align="left"></th>
-</tr>
-</thead>
-<tbody>
-</tbody>
-</table>
-</div><div class="section slide level2" id="mean-median-mode-continued-2">
-<h1>Mean, Median, Mode (continued)</h1>
-<ul class="incremental">
+
+<p>sales  female   education               income</p>
+
+<hr/>
+
+<p>1209       0       high school          35000<br/>
+  2587       0       4yr degree           45000<br/>
+ 13265       1       some college         65000<br/>
+  5687       0       some college         49000</p>
+
+<p>mean     mode      median</p>
+
+<hr/>
+
+<h2>Mean, Median, Mode (continued)</h2>
+
+<ul>
 <li>Pros
-<ul class="incremental">
+
+<ul>
 <li>Fast</li>
 <li>Principled</li>
 <li>Better than throwing away data</li>
 <li>Tends to work</li>
 </ul></li>
 <li>Cons
-<ul class="incremental">
+
+<ul>
 <li>We can do better.</li>
-<li>“Making up data” makes us more certain than we should be.</li>
+<li>&ldquo;Making up data&rdquo; makes us more certain than we should be.</li>
 </ul></li>
 </ul>
-</div>
-<div class="section titleslide slide level1" id="home-rolled-imputation"><h1>Home-Rolled Imputation</h1></div><div class="section slide level2" id="imputation-with-regression">
-<h1>Imputation with Regression</h1>
-<ol class="incremental" style="list-style-type: decimal">
+
+<h1>Home-Rolled Imputation</h1>
+
+<h2>Imputation with Regression</h2>
+
+<ol>
 <li>Identify a cell <tt>X[i,j]</tt> to impute.</li>
 <li>Find all rows <code>prediction.rows</code> that:
-<ol class="incremental" style="list-style-type: lower-alpha">
-<li>have an observed value for column <tt>j</tt></li>
-<li>have observed values for all other columns <tt>obs.cols</tt> that row <tt>i</tt> has</li>
-</ol></li>
+a. have an observed value for column <tt>j</tt>
+b. have observed values for all other columns <tt>obs.cols</tt> that row <tt>i</tt> has</li>
 <li>Using those rows: <tt>reg &lt;- lm(X[prediction.rows,j] ~ X[prediction.rows,obs.cols])</tt></li>
 <li>Fill with <tt>predict(reg, names(X)[obs.cols]=X[i,obs.cols])</tt></li>
 </ol>
-</div><div class="section slide level2" id="imputation-with-regression-continued">
-<h1>Imputation with Regression (continued)</h1>
-<table>
-<thead>
-<tr class="header">
-<th align="right">y</th>
-<th align="left"> </th>
-<th align="right">x1</th>
-<th align="right">x2</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="right">7.44</td>
-<td align="left"></td>
-<td align="right">1.21</td>
-<td align="right">1.95</td>
-</tr>
-<tr class="even">
-<td align="right">3.25</td>
-<td align="left"></td>
-<td align="right">-1.35</td>
-<td align="right">0.11</td>
-</tr>
-<tr class="odd">
-<td align="right">3.90</td>
-<td align="left"></td>
-<td align="right">NA</td>
-<td align="right">0.63</td>
-</tr>
-<tr class="even">
-<td align="right">5.19</td>
-<td align="left"></td>
-<td align="right">0.16</td>
-<td align="right">2.27</td>
-</tr>
-<tr class="odd">
-<td align="right">5.57</td>
-<td align="left"></td>
-<td align="right">0.17</td>
-<td align="right">1.53</td>
-</tr>
-<tr class="even">
-<td align="right">…</td>
-<td align="left"></td>
-<td align="right">…</td>
-<td align="right">…</td>
-</tr>
-</tbody>
-</table>
-</div><div class="section slide level2" id="imputation-with-regression-continued-1">
-<h1>Imputation with Regression (continued)</h1>
-<table>
-<thead>
-<tr class="header">
-<th align="right">y</th>
-<th align="left"> </th>
-<th align="right">x1</th>
-<th align="right">x2</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="right">7.44</td>
-<td align="left"></td>
-<td align="right">1.21</td>
-<td align="right">1.95</td>
-</tr>
-<tr class="even">
-<td align="right">3.25</td>
-<td align="left"></td>
-<td align="right">-1.35</td>
-<td align="right">0.11</td>
-</tr>
-<tr class="odd">
-<td align="right">3.90</td>
-<td align="left"></td>
-<td align="right">-0.89</td>
-<td align="right">0.63</td>
-</tr>
-<tr class="even">
-<td align="right">5.19</td>
-<td align="left"></td>
-<td align="right">0.16</td>
-<td align="right">2.27</td>
-</tr>
-<tr class="odd">
-<td align="right">5.57</td>
-<td align="left"></td>
-<td align="right">0.17</td>
-<td align="right">1.53</td>
-</tr>
-<tr class="even">
-<td align="right">…</td>
-<td align="left"></td>
-<td align="right">…</td>
-<td align="right">…</td>
-</tr>
-</tbody>
-</table>
-<ul class="incremental">
+
+<h2>Imputation with Regression (continued)</h2>
+
+<pre><code> y   &amp;nbsp;     x1     x2
+</code></pre>
+
+<hr/>
+
+<p>7.44            1.21   1.95<br/>
+  3.25           -1.35   0.11<br/>
+  3.90              NA   0.63<br/>
+  5.19            0.16   2.27<br/>
+  5.57            0.17   1.53<br/>
+  &hellip;              &hellip;    &hellip;</p>
+
+<hr/>
+
+<h2>Imputation with Regression (continued)</h2>
+
+<pre><code> y   &amp;nbsp;     x1     x2
+</code></pre>
+
+<hr/>
+
+<p>7.44            1.21   1.95<br/>
+  3.25           -1.35   0.11<br/>
+  3.90           -0.89   0.63<br/>
+  5.19            0.16   2.27<br/>
+  5.57            0.17   1.53<br/>
+  &hellip;              &hellip;    &hellip;</p>
+
+<hr/>
+
+<ul>
 <li>Missing value: -0.89</li>
 <li>Predicted value: -0.89</li>
 </ul>
-</div><div class="section slide level2" id="type-of-regression-varies-by-variable-type">
-<h1>Type of Regression Varies by Variable Type</h1>
-<dl class="incremental">
-<dt>Continuous</dt>
-<dd><p>Linear regression with <tt>lm()</tt></p>
-</dd>
-<dt>Ordinal</dt>
-<dd><p>Ordered logit/probit regression with <tt>MASS::polr</tt></p>
-</dd>
-<dt>Count</dt>
-<dd><p>Poisson regression with <tt>glm(…, family=poisson(link = “log”))</tt></p>
-</dd>
-<dt>Categorical</dt>
-<dd><p>Multinomial logit with <tt>nnet::multinom</tt></p>
-</dd>
-</dl>
-</div><div class="section slide level2" id="safety-first">
-<h1>Safety First!</h1>
-<ul class="incremental">
+
+<h2>Type of Regression Varies by Variable Type</h2>
+
+<p>Continuous</p>
+
+<p>:    Linear regression with <tt>lm()</tt></p>
+
+<p>Ordinal</p>
+
+<p>:    Ordered logit/probit regression with <tt>MASS::polr</tt></p>
+
+<p>Count</p>
+
+<p>:    Poisson regression with <tt>glm(&hellip;, family=poisson(link = &ldquo;log&rdquo;))</tt></p>
+
+<p>Categorical</p>
+
+<p>:    Multinomial logit with <tt>nnet::multinom</tt></p>
+
+<h2>Safety First!</h2>
+
+<ul>
 <li>Look out for having too little data to estimate. (Default to mean/median/mode?)</li>
 <li>Data is dirty in other ways (illegal values).</li>
-<li>Iterative algorithms sometimes don’t converge.</li>
-<li>Still have problem that “Making up data” makes us more certain than we should be.</li>
+<li>Iterative algorithms sometimes don&#39;t converge.</li>
+<li>Still have problem that &ldquo;Making up data&rdquo; makes us more certain than we should be.</li>
 </ul>
-</div>
-<div class="section titleslide slide level1" id="existing-tools"><h1>Existing Tools</h1></div><div class="section slide level2" id="small-data-sets">
-<h1>Small Data Sets</h1>
+
+<h1>Existing Tools</h1>
+
+<h2>Small Data Sets</h2>
+
 <p><tt>Amelia</tt> (King) and <tt>mi</tt> (Gelman) work differently from home-rolled solutions.</p>
+
 <p>Multiple Imputation</p>
-<ol class="incremental" style="list-style-type: decimal">
-<li>Generate <span class="LaTeX">$m$</span> copies of the data set, each with <strong>different</strong> imputed values.</li>
-<li>Perform the desired analysis on each imputed data set to get the quantity of interest <span class="LaTeX">$q$</span>.</li>
+
+<ol>
+<li>Generate \( m \) copies of the data set, each with <strong>different</strong> imputed values.</li>
+<li>Perform the desired analysis on each imputed data set to get the quantity of interest \( q \).</li>
 <li>Aggregate the results:
-<ol class="incremental" style="list-style-type: decimal">
-<li>If <span class="LaTeX">$m=5$</span> or so
-<ul class="incremental">
+
+<ol>
+<li>If \( m=5 \) or so
+
+<ul>
 <li>Point-estimates: <tt>mean(q)</tt></li>
-<li>SEs: fairly simple formula <span class="LaTeX">$$SE(q)=\sqrt{\underbrace{\frac{1}{m}\sum_{j=1}^m SE(q_j)^2}_{within} + \underbrace{\frac{1}{m-1}\sum_{j=1}^m(q_j-\bar{q})^2}_{between}$$</span></li>
+<li>SEs: fairly simple formula</li>
 </ul></li>
-<li>If <span class="LaTeX">$m$</span> large
-<ul class="incremental">
+<li>If \( m \) large
+
+<ul>
 <li>Treat as simulation result</li>
 <li><tt>mean</tt> and <tt>sd</tt></li>
 </ul></li>
 </ol></li>
 <li>Check distribution of observed versus imputed values (<tt>plot</tt>, <tt>ks.test</tt>)</li>
 </ol>
-</div><div class="section slide level2" id="amelia-example">
-<h1>Amelia Example</h1>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(Amelia)</code></pre>
-<pre><code>## Loading required package: foreign</code></pre>
-<pre><code>## ## ## Amelia II: Multiple Imputation ## (Version 1.6.3, built: 2012-06-21)
-## ## Copyright (C) 2005-2012 James Honaker, Gary King and Matthew Blackwell
-## ## Refer to http://gking.harvard.edu/amelia/ for more information ##</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(africa)
-a.out &lt;- <span class="kw">amelia</span>(<span class="dt">x =</span> africa, <span class="dt">cs =</span> <span class="st">&quot;country&quot;</span>, <span class="dt">ts =</span> <span class="st">&quot;year&quot;</span>, <span class="dt">logs =</span> <span class="st">&quot;gdp_pc&quot;</span>)</code></pre>
+
+<h2>Amelia Example</h2>
+
+<pre><code class="r">library(Amelia)
+data(africa)
+</code></pre>
+
+<pre><code class="r">a.out &lt;- amelia(x = africa, cs = &quot;country&quot;, ts = &quot;year&quot;, logs = &quot;gdp_pc&quot;)
+</code></pre>
+
 <pre><code>## -- Imputation 1 --
 ## 
-##  1  2  3 
+##  1  2 
 ## 
 ## -- Imputation 2 --
 ## 
@@ -713,19 +525,23 @@ a.out &lt;- <span class="kw">amelia</span>(<span class="dt">x =</span> africa, <
 ## 
 ## -- Imputation 3 --
 ## 
-##  1  2  3 
+##  1  2 
 ## 
 ## -- Imputation 4 --
 ## 
-##  1  2  3 
+##  1  2 
 ## 
 ## -- Imputation 5 --
 ## 
-##  1  2  3 
-## </code></pre>
-</div><div class="section slide level2" id="amelia-example-continued">
-<h1>Amelia Example (continued)</h1>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(a.out)</code></pre>
+##  1  2 
+## 
+</code></pre>
+
+<h2>Amelia Example (continued)</h2>
+
+<pre><code class="r">summary(a.out)
+</code></pre>
+
 <pre><code>## 
 ## Amelia output with 5 imputed datasets.
 ## Return code:  1 
@@ -733,11 +549,11 @@ a.out &lt;- <span class="kw">amelia</span>(<span class="dt">x =</span> africa, <
 ## 
 ## Chain Lengths:
 ## --------------
-## Imputation 1:  3
+## Imputation 1:  2
 ## Imputation 2:  3
-## Imputation 3:  3
-## Imputation 4:  3
-## Imputation 5:  3
+## Imputation 3:  2
+## Imputation 4:  2
+## Imputation 5:  2
 ## 
 ## Rows after Listwise Deletion:  115 
 ## Rows after Imputation:  120 
@@ -754,158 +570,121 @@ a.out &lt;- <span class="kw">amelia</span>(<span class="dt">x =</span> africa, <
 ## trade               0.04167
 ## civlib              0.00000
 ## population          0.00000
-## </code></pre>
-</div><div class="section slide level2" id="amelia-example-continued-1">
-<h1>Amelia Example (continued)</h1>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(a.out)</code></pre>
-<div class="figure">
-<img src="figure/Amelia3.png" alt="plot of chunk Amelia3" /><p class="caption">plot of chunk Amelia3</p>
-</div>
-</div><div class="section slide level2" id="thats-hard.-what-have-we-gained-or-lost">
-<h1>That’s hard. What have we gained or lost?</h1>
-<ul class="incremental">
+## 
+</code></pre>
+
+<h2>Amelia Example (continued)</h2>
+
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAADYCAMAAAB8685yAAAAk1BMVEX9/v0AAAAAADkAAGUAOTkAOY8AZmUAZo8AZrU5AAA5ADk5OQA5ZrU5j9plAABlAGVlOTllOY9lZgBlZmVlZrVltdpltf2POQCPOWWPZmWPj2WPj9qP29qP2/21ZgC1Zjm1ZmW1jzm12/21/rW1/v3ajznatbXa29ra/tra/v39tWX924/927X9/rX9/tr9/v3/AADDKhVOAAAAMXRSTlP//////////////////////////////////////////////////////////////wD/obxc3gAAAAlwSFlzAAALEgAACxIB0t1+/AAACGZJREFUeJztnYt6ozYQhZdk09rbJu1uU6dNa2fb2m1j14H3f7pKGi4CBIeLJDPOnG/XscVokH5GAgxmPqSiXn24dAOWLgEEJICABBDQBEDnhyS53adH9X+I8aar8PRp667zsm1Y1tRZrWjcPVr9KI0HdH5QLTjc7oMBOt7MANRYeglABw1GUTrefJfcvb49JckqTXeJ2nBHFVlf1NLT+p4K1MKP601KQXf3erz9okKvLFR9OSgf3z7pRcaZYn5++PkpudnWq+/IKXlR1YzdplyHbkBq2rB605XTvCa9kmtqe/7+UFQJA0iv7e1JAdoqTKq5//2poakWH5ONgaM+UYF6Pa03Rdu26p/6WBYaQFtV6aR7oZ1Rx9X7RvXcKXkpAZERNUAv0h/vKYKoJr2S67IRZtNuh0fWjAhSf3crvd1u9+pFbU0zNnZ3/z6ZAFIFimXeEvX5puhXUagBqZFqqJGzElCrunFKXkpAZEQNyDfcbpUDMjXpNW9nmkNU7w9FQIUBdH5Y0RyUbGjLUFPSfPI4fXpWraCCMgR2ehBVG76KoBKQcZa/VxFUr547JS8aEIVi0U+i2BlBRTu1TbGat6f7Zr+8ASr3YuUcVLzS7LrTu5GymCYRNTt9NGGi+lKbg6oI+pLo7a0XndY3v9er507Ji6pGdvaqyUbNLARIFX5TrIlc54Do/SFJBgfRQo6Dhu0Sx6icZWzXE1ZznYBO68SKmj0VqAnseTagRGTLAWjiJrtOxQSUtd4wUERAWZaV7wKtIoBiAioiJxNATlWAOI0xAQQkgIAEENCFAPEhdBlAjEIoHqAsLbgIIKcEEFAJqCLFQQIISAABCSAgAQQkgIAMoPNvzaIA4gwoPSTWN9kCyFYxxPSFrvuqKIAMlxolFqIh9rhL7n7d//1aFgVQPXp4ATKXN8rrjGEAVWcZDAGdH5tF/tU4DeMF6Ed9zbGcpgWQrWjHQQIIiDeg3eZQ3ZAmgGzlk/T58+tXmYNcyiMo2eziRFDGE1CryL8al3x4AdLnGXF28+UFHwHUFGtA7SL/agLiQig2oM7PS1XxfdDqGHYv1uLBCpA6DnpMwx4H8Qak76qufkEkgGzFmoN4A9K3WFc/0BJAtgygX/Rvdz4H/UaRNyDzhaJM0k4ZQPpAOvCRNG9A7SLvEkBAAgiozYMJoUiAHOemAsiWg4YAsiWAgAQQkAACEkBAAqj9W+na0qzbdNLa4skLIGc/7f7TYVCDSWaZjV5lNM0HBPrXHStZw2rcamNpLqBhHXPON83CZYbSLECDO+QG5Chd3oCbDGhMRzquEnbtxxY1f08CNLb1HSTgjt75II3IGgloUju7LjNPuPzsfPzIKI1eY9oDyIN/rU4OlzhWHMsx4o96eUoAAbkAiWy1AfWx9GDjyU1MGwEEJICABBDQQh4TuFwJICABBCSAgAQQkAACEkBAgwCdH5LeJ5yf1vpB1vS/w8NjWhh0Gikb5Oi01k9bxzbIzzHBfnINAnTYVLd5Ote3IZs/uuxO61Vp0GWkbZCjl+1xhfxoG+TnH7Um5CfXIEBf99Vtni4d1AbRNj912tHd/Mag00jZYEfHDfSjO4/8HG/32I+RF0C6c14AQUe+/KSn730CQkPsZXt+7B1iJjpQSCsb5Oj8wx760TbIj73cxxDDk3Q153V4GDpJ9zvSz/VHfrQN8jNkss8lu3kgAQQkgIAEEJAAAhJAQAIISAABCSAgAQQkgIAEEJAAAhJAQAIISAABTQXEIeHzy7ZROiWt8URAHBI+2y46WwE1ERCDhM/69Vk15q8HK2frLkmGZqCdCYhBwuej8ZuvtszdOzaO5kbQghM+09bIK5Cb3DoCIA4Jn3NAVCGPoDFpsGcB4pDwWbl4Vo2hCmUG+uFZnucBCiH/CZ89SAAByU8R+uQAFG3LcFAEQGwe2+pUDEBcHrLgVHhAGe8YigKIcwgFB8TsCe0tCSCgWIDYEgoNKGv8ZScBBCSAgGIBYksoMKDM8Y6X4gFiSigaIK4hJICAwgLKBFC/ss4PbGQABcv1fC2AguV6rgMqE0NljHZpxRALk+s5c3yq8j2zEA2xULmeG4Cy4oXRUZEBZC5vBMj13MopljHNUBcq13M7V0TG7tzMAAqV67kPAitA7SI/EkD96p+JmRAiQGFyPfcj4AQoUK7n6wEUKNczQMCDUNA5aNbihYiGWJBUxuhoWQCh5SwIBRxisP8CaK7BElR8HxQg1/MVAQqT6xn3nwOhIoL853oe0Hs+gFpFHnRNgILker4mQEFyPQ/pPQNCBlCIXM+D+s4FUIhcz1cFqF00X8MALZ9QIECNX4N06n0C0lCs2OiD9B4BEY2sWeiGtPwx5htQPcNjfYmL0TsDVCFwd7w9J2Xt5QOmrojyCcjqVE9ggF/3teymtsaT/AGq9WX4yEGWl4bkDVC9F/4A5c4vBskToN6ZpVeD92MXguQHULPpY/ZNY2wvAMkHoHaS4lGARu7pI09K8wE5mjuuyxMOhSLu3+YCcrVzZExMPpqOciAwD5C7dWM7PPd8I+jB5QxAXQ0a311v5xsBSE0E1N2ISeHg+5zV4xnLaED96516i3iwW8v7TmaGOUjH5XoG339N72acu+/7TgTdvQz7Y5YrkAACcgES2WoDahP0uTUW6Qz4EkACaJ4vATQHkEgAQQkgIAEEJICABBCQAALqAYSShw5XkXrZhy8rIakPX7BpPYBQ+tnhKlIve/BmZ42e687OLt3pqwcQTmA8VEXqZR/erGTGs91Z2aU7fUUBVKReXiAg2LQoQ6xIrezDm5U1erY7K7v0lCHmc5Km1Mo+fHmfpEHTZDcPJICABBCQAAISQEACCEgAAQkgIAEEJICABBDQ/062TbPcyXpWAAAAAElFTkSuQmCC" alt="plot of chunk Amelia4"/> </p>
+
+<h2>That&#39;s hard. What have we gained or lost?</h2>
+
+<ul>
 <li>Correct reporting of uncertainty (SEs)</li>
-<li>Actually, it’s easier than rolling your own
-<ul class="incremental">
+<li>Actually, it&#39;s easier than rolling your own
+
+<ul>
 <li>Smart about pathologies</li>
 <li>Smart about variable types</li>
 <li>Code is shorter if you are implementing in <tt>R</tt></li>
 <li>Very fast on reasonably sized data sets</li>
 </ul></li>
 <li>If you are <strong>not</strong> implementing in <tt>R</tt>, you have a lot more work
-<ul class="incremental">
+
+<ul>
 <li>Reading the paper(s), implementing your own version</li>
 <li>Quite do-able, not for faint at heart</li>
 </ul></li>
 <li>Not scalable</li>
 </ul>
-</div><div class="section slide level2" id="large-data-sets-bayes">
-<h1>Large Data Sets: Bayes</h1>
+
+<h2>Large Data Sets: Bayes</h2>
+
 <p>Bayesian data augmentation</p>
-<ul class="incremental">
+
+<ul>
 <li>When using Bayes to estimate a model, put a prior on the <em>data</em>.</li>
 <li>The algorithm will give draws from the posterior distribution of the missing values.</li>
 <li>It uses the model defined (whatever it is) to impute.</li>
 </ul>
-</div><div class="section slide level2" id="large-data-sets-bayes-continued">
-<h1>Large Data Sets: Bayes (continued)</h1>
-<p>Problems</p>
-<ul class="incremental">
+
+<h2>Large Data Sets: Bayes (continued)</h2>
+
+<p>Problems </p>
+
+<ul>
 <li>Slow</li>
 <li>Convergence can be tricky</li>
 <li>Expertise required for custom samplers, but libraries for implementing custom solutions: <tt>rcppbugs</tt> in R, others for C++, Python, etc.</li>
 </ul>
-</div><div class="section slide level2" id="large-data-sets-bayes-continued-1">
-<h1>Large Data Sets: Bayes (continued)</h1>
+
+<h2>Large Data Sets: Bayes (continued)</h2>
+
 <p>Example: Using Bayes for IRT on network links to generate DILS (data-informed link strength)</p>
-<table>
-<thead>
-<tr class="header">
-<th align="center">linkid</th>
-<th align="center">net1</th>
-<th align="center">net2</th>
-<th align="center">net3</th>
-<th align="center">…</th>
-<th align="center">netk</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center">1</td>
-<td align="center">1</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">…</td>
-<td align="center">1</td>
-</tr>
-<tr class="even">
-<td align="center">2</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">1</td>
-<td align="center">…</td>
-<td align="center">0</td>
-</tr>
-<tr class="odd">
-<td align="center">3</td>
-<td align="center">1</td>
-<td align="center">NA</td>
-<td align="center">1</td>
-<td align="center">…</td>
-<td align="center">1</td>
-</tr>
-<tr class="even">
-<td align="center">4</td>
-<td align="center">1</td>
-<td align="center">0</td>
-<td align="center">NA</td>
-<td align="center">…</td>
-<td align="center">0</td>
-</tr>
-<tr class="odd">
-<td align="center">5</td>
-<td align="center">NA</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">…</td>
-<td align="center">1</td>
-</tr>
-</tbody>
-</table>
-<p>becomes…</p>
-</div><div class="section slide level2" id="large-data-sets-bayes-continued-2">
-<h1>Large Data Sets: Bayes (continued)</h1>
+
+<p>linkid   net1   net2   net3   &hellip;   netk </p>
+
+<hr/>
+
+<p>1       1      0      0      &hellip;   1<br/>
+  2       0      0      1      &hellip;   0<br/>
+  3       1      NA     1      &hellip;   1<br/>
+  4       1      0      NA     &hellip;   0<br/>
+  5       NA     0      0      &hellip;   1</p>
+
+<p>becomes&hellip;</p>
+
+<h2>Large Data Sets: Bayes (continued)</h2>
+
 <p>Example: Using Bayes for IRT on network links to generate DILS (data-informed link strength)</p>
-<table>
-<thead>
-<tr class="header">
-<th align="center">linkid</th>
-<th align="left">dils</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center">1</td>
-<td align="left">.12</td>
-</tr>
-<tr class="even">
-<td align="center">2</td>
-<td align="left">.01</td>
-</tr>
-<tr class="odd">
-<td align="center">3</td>
-<td align="left">.34</td>
-</tr>
-<tr class="even">
-<td align="center">4</td>
-<td align="left">.08</td>
-</tr>
-<tr class="odd">
-<td align="center">5</td>
-<td align="left">.03</td>
-</tr>
-</tbody>
-</table>
-</div><div class="section slide level2" id="large-data-sets-random-forest-classifier">
-<h1>Large Data Sets: Random Forest Classifier</h1>
-<ul class="incremental">
-<li>Same as the home-rolled, in a sense.</li>
-<li>Use a random forest (like <tt>missForest</tt>) to predict missing values.</li>
+
+<p>linkid  dils</p>
+
+<hr/>
+
+<p>1       .12<br/>
+  2       .01<br/>
+  3       .34<br/>
+  4       .08<br/>
+  5       .03</p>
+
+<h2>Large Data Sets: Random Forest Classifier</h2>
+
+<p>Easy solution: use <tt>missForest</tt></p>
+
+<pre><code class="r">library(Amelia)  # to provide the data
+data(africa)
+library(missForest)
+</code></pre>
+
+<pre><code class="r">africa.rf &lt;- missForest(africa)
+</code></pre>
+
+<pre><code>##   missForest iteration 1 in progress...done!
+##   missForest iteration 2 in progress...done!
+##   missForest iteration 3 in progress...done!
+##   missForest iteration 4 in progress...done!
+##   missForest iteration 5 in progress...done!
+</code></pre>
+
+<ul>
 <li>Keep <strong>all</strong> of the trees in the forest.</li>
 <li>Aggregate as with other simulations</li>
 </ul>
-</div><div class="section slide level2" id="large-data-sets-random-forest-classifier-continued">
-<h1>Large Data Sets: Random Forest Classifier (continued)</h1>
-<ul class="incremental">
+
+<h2>Large Data Sets: Random Forest Classifier (continued)</h2>
+
+<ul>
 <li>Scales well.</li>
 <li>Forest gives us reasonable measures of uncertainty.</li>
 <li>Requires a <strong>lot</strong> of data (think non-parametric).</li>
 <li>Without care might give silly values.</li>
 <li>Still should check imputed distributions against observed distributions.</li>
 </ul>
-</div><div class="section slide level2" id="real-time-fastimputation">
-<h1>Real-Time: <tt>FastImputation</tt></h1>
-<ul class="incremental">
+
+<h2>Real-Time: <tt>FastImputation</tt></h2>
+
+<ul>
 <li>Project: Improve fraud detection classifier</li>
 <li>Same model as Amelia</li>
 <li>Learns (slowly) using lots of data</li>
@@ -913,49 +692,58 @@ a.out &lt;- <span class="kw">amelia</span>(<span class="dt">x =</span> africa, <
 <li>On CRAN</li>
 <li>Caveat emptor (as with all <tt>R</tt> packages)</li>
 </ul>
-</div>
-<div class="section titleslide slide level1" id="when-imputation-fails"><h1>When Imputation Fails</h1></div><div class="section slide level2" id="to-imputate-or-not">
-<h1>To Imputate or Not?</h1>
-<ul class="incremental">
+
+<h1>When Imputation Fails</h1>
+
+<h2>To Imputate or Not?</h2>
+
+<ul>
 <li>Assumptions of Imputation
-<ul class="incremental">
+
+<ul>
 <li>Data is MCAR or MAR+PD</li>
-<li>“Small” fraction of data missing
-<ul class="incremental">
+<li>&ldquo;Small&rdquo; fraction of data missing
+
+<ul>
 <li>&lt; 10%: usually no problem</li>
 <li>10%-20%: Be careful</li>
-<li><blockquote>
-<p>20%: There be dragons</p>
-</blockquote></li>
+<li>&gt; 20%: There be dragons</li>
 </ul></li>
 </ul></li>
-<li>Always<sup>*</sup> better than row deletion</li>
+<li>Always<sup>*^</sup> better than row deletion</li>
 </ul>
-</div><div class="section slide level2" id="what-to-do-when-imputation-fails">
-<h1>What to Do When Imputation Fails</h1>
-<ul class="incremental">
-<li>Explicitly model the reason observations are missing
-<ul class="incremental">
+
+<h2>What to Do When Imputation Fails</h2>
+
+<ul>
+<li><p>Explicitly model the reason observations are missing</p>
+
+<ul>
 <li>Tobit (incomes censored, displayed as zero)</li>
 <li>Truncated regression (heights in military)</li>
 <li>Abstentions in voting (more likely if you disagree with party)</li>
 </ul>
+
 <p>or</p></li>
 <li><p>Impute anyway and warn the consumer (worth considering)</p></li>
 </ul>
-</div>
-<div class="section titleslide slide level1" id="fin"><h1>Fin</h1></div><div class="section slide level2" id="links-and-contact-info">
-<h1>Links and Contact Info</h1>
-<ul class="incremental">
-<li>This presentation and code: https://github.com/shaptonstahl/MissingData_2012-08</li>
-<li><tt>Amelia</tt>: http://gking.harvard.edu/amelia (the 2001 paper is a good place to start)</li>
-<li><tt>mi</tt>: http://cran.r-project.org/web/packages/mi</li>
-<li>Great ref on missing data, imputation: http://gking.harvard.edu/files/evil.pdf</li>
-<li><tt>FastImputation</tt>: http://cran.r-project.org/web/packages/FastImputation</li>
-<li>Data-Informed Link Strength (DILS): https://github.com/shaptonstahl/dils</li>
-<li>Great place to work: http://www.bericotechnologies.com</li>
-<li>Stephen Haptonstahl – srh@haptonstahl.org – @polimath</li>
+
+<h1>Fin</h1>
+
+<h2>Links and Contact Info</h2>
+
+<ul>
+<li>This presentation and code: <a href="https://github.com/shaptonstahl/MissingData_2012-08">https://github.com/shaptonstahl/MissingData_2012-08</a></li>
+<li><tt>Amelia</tt>: <a href="http://gking.harvard.edu/amelia">http://gking.harvard.edu/amelia</a> (the 2001 paper is a good place to start)</li>
+<li><tt>mi</tt>: <a href="http://cran.r-project.org/web/packages/mi">http://cran.r-project.org/web/packages/mi</a></li>
+<li>Great ref on missing data, imputation: <a href="http://gking.harvard.edu/files/evil.pdf">http://gking.harvard.edu/files/evil.pdf</a></li>
+<li><tt>FastImputation</tt>: <a href="http://cran.r-project.org/web/packages/FastImputation">http://cran.r-project.org/web/packages/FastImputation</a></li>
+<li>Data-Informed Link Strength (DILS): <a href="https://github.com/shaptonstahl/dils">https://github.com/shaptonstahl/dils</a></li>
+<li>Great place to work: <a href="http://www.bericotechnologies.com">http://www.bericotechnologies.com</a></li>
+<li>Stephen Haptonstahl &ndash; <a href="mailto:srh@haptonstahl.org">srh@haptonstahl.org</a> &ndash; @polimath</li>
 </ul>
-</div>
+
 </body>
+
 </html>
+

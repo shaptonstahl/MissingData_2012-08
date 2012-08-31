@@ -8,7 +8,16 @@
 
 ## Data, in theory
 
-<!-- Compile with: pandoc -i -s -S -toc --latexmathml -t slidy -o HandlingMissingData.html HandlingMissingData.md -->
+<!-- 
+Compile to HTML5 with: 
+  
+  pandoc -i -s -S -toc --latexmathml -t slidy -o HandlingMissingData.html HandlingMissingData.md 
+  
+Compile to PDF of Beamer slides with:
+  
+  pandoc -i -s -S -toc -t beamer -o HandlingMissingData.pdf HandlingMissingData.md
+
+-->
 
 Suppose we want to mine sales records to see what kind of customer buys more from us.
 
@@ -224,7 +233,6 @@ Multiple Imputation
     1. If $m=5$ or so
         * Point-estimates: <tt>mean(q)</tt>
         * SEs: fairly simple formula
-          $$SE(q)=\sqrt{\underbrace{\frac{1}{m}\sum_{j=1}^m SE(q_j)^2}_{within} + \underbrace{\frac{1}{m-1}\sum_{j=1}^m(q_j-\bar{q})^2}_{between}$$
     2. If $m$ large
         * Treat as simulation result
         * <tt>mean</tt> and <tt>sd</tt>
@@ -235,27 +243,19 @@ Multiple Imputation
 
 ```r
 library(Amelia)
+data(africa)
 ```
 
-```
-## Loading required package: foreign
-```
 
-```
-## ## ## Amelia II: Multiple Imputation ## (Version 1.6.3, built: 2012-06-21)
-## ## Copyright (C) 2005-2012 James Honaker, Gary King and Matthew Blackwell
-## ## Refer to http://gking.harvard.edu/amelia/ for more information ##
-```
 
 ```r
-data(africa)
 a.out <- amelia(x = africa, cs = "country", ts = "year", logs = "gdp_pc")
 ```
 
 ```
 ## -- Imputation 1 --
 ## 
-##  1  2  3 
+##  1  2 
 ## 
 ## -- Imputation 2 --
 ## 
@@ -263,15 +263,15 @@ a.out <- amelia(x = africa, cs = "country", ts = "year", logs = "gdp_pc")
 ## 
 ## -- Imputation 3 --
 ## 
-##  1  2  3 
+##  1  2 
 ## 
 ## -- Imputation 4 --
 ## 
-##  1  2  3 
+##  1  2 
 ## 
 ## -- Imputation 5 --
 ## 
-##  1  2  3 
+##  1  2 
 ## 
 ```
 
@@ -291,11 +291,11 @@ summary(a.out)
 ## 
 ## Chain Lengths:
 ## --------------
-## Imputation 1:  3
+## Imputation 1:  2
 ## Imputation 2:  3
-## Imputation 3:  3
-## Imputation 4:  3
-## Imputation 5:  3
+## Imputation 3:  2
+## Imputation 4:  2
+## Imputation 5:  2
 ## 
 ## Rows after Listwise Deletion:  115 
 ## Rows after Imputation:  120 
@@ -318,12 +318,7 @@ summary(a.out)
 
 ## Amelia Example (continued)
 
-
-```r
-plot(a.out)
-```
-
-![plot of chunk Amelia3](figure/Amelia3.png) 
+![plot of chunk Amelia4](figure/Amelia4.png) 
 
 
 ## That's hard. What have we gained or lost?
@@ -383,8 +378,30 @@ Example: Using Bayes for IRT on network links to generate DILS (data-informed li
 
 ## Large Data Sets: Random Forest Classifier
 
-* Same as the home-rolled, in a sense.
-* Use a random forest (like <tt>missForest</tt>) to predict missing values.
+Easy solution: use <tt>missForest</tt>
+
+
+```r
+library(Amelia)  # to provide the data
+data(africa)
+library(missForest)
+```
+
+
+
+```r
+africa.rf <- missForest(africa)
+```
+
+```
+##   missForest iteration 1 in progress...done!
+##   missForest iteration 2 in progress...done!
+##   missForest iteration 3 in progress...done!
+##   missForest iteration 4 in progress...done!
+##   missForest iteration 5 in progress...done!
+```
+
+
 * Keep **all** of the trees in the forest.
 * Aggregate as with other simulations
 

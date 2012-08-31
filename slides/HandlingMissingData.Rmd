@@ -8,7 +8,16 @@
 
 ## Data, in theory
 
-<!-- Compile with: pandoc -i -s -S -toc --latexmathml -t slidy -o HandlingMissingData.html HandlingMissingData.md -->
+<!-- 
+Compile to HTML5 with: 
+  
+  pandoc -i -s -S -toc --latexmathml -t slidy -o HandlingMissingData.html HandlingMissingData.md 
+  
+Compile to PDF of Beamer slides with:
+  
+  pandoc -i -s -S -toc -t beamer -o HandlingMissingData.pdf HandlingMissingData.md
+
+-->
 
 Suppose we want to mine sales records to see what kind of customer buys more from us.
 
@@ -224,7 +233,6 @@ Multiple Imputation
     1. If $m=5$ or so
         * Point-estimates: <tt>mean(q)</tt>
         * SEs: fairly simple formula
-          $$SE(q)=\sqrt{\underbrace{\frac{1}{m}\sum_{j=1}^m SE(q_j)^2}_{within} + \underbrace{\frac{1}{m-1}\sum_{j=1}^m(q_j-\bar{q})^2}_{between}$$
     2. If $m$ large
         * Treat as simulation result
         * <tt>mean</tt> and <tt>sd</tt>
@@ -232,22 +240,28 @@ Multiple Imputation
 
 ## Amelia Example
 
-```{r Amelia1}
+```{r Amelia1, message=FALSE, size='scriptsize'}
 library(Amelia)
 data(africa)
+```
+
+```{r Amelia2, size='footnotesize'}
 a.out <- amelia(x = africa, cs = "country", ts = "year", logs = "gdp_pc")
 ```
 
 ## Amelia Example (continued)
 
-```{r Amelia2}
+```{r Amelia3, size='scriptsize'}
 summary(a.out)
 ```
 
 ## Amelia Example (continued)
 
-```{r Amelia3}
-plot(a.out)
+```{r Amelia4, fig.height=3, fig.width=4, echo=FALSE}
+original.par <- par(no.readonly = TRUE)
+par(omi=c(0,0,0,0), mar=c(2,1,1,.25), ps=8, tcl=-.3, mgp=c(.4, .4, 0), yaxt="n")
+plot(a.out, xlab="", ylab="Density")
+par(original.par)
 ```
 
 ## That's hard. What have we gained or lost?
@@ -307,8 +321,18 @@ Example: Using Bayes for IRT on network links to generate DILS (data-informed li
 
 ## Large Data Sets: Random Forest Classifier
 
-* Same as the home-rolled, in a sense.
-* Use a random forest (like <tt>missForest</tt>) to predict missing values.
+Easy solution: use <tt>missForest</tt>
+
+```{r missForest1, message=FALSE, size='scriptsize'}
+library(Amelia)  # to provide the data
+data(africa)
+library(missForest)
+```
+
+```{r missForest2, size='footnotesize'}
+africa.rf <- missForest(africa)
+```
+
 * Keep **all** of the trees in the forest.
 * Aggregate as with other simulations
 
