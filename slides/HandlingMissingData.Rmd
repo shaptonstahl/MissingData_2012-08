@@ -9,14 +9,13 @@
 ## Data, in theory
 
 <!-- 
-Compile to HTML5 with: 
+Compile to HTML5 slides (using Slidy) with: 
   
-  pandoc -i -s -S -toc --latexmathml -t slidy -o HandlingMissingData.html HandlingMissingData.md 
+  pandoc -i -s -S -toc --self-contained --latexmathml -t slidy -o HandlingMissingData.html HandlingMissingData.md 
   
 Compile to PDF of Beamer slides with:
   
   pandoc -i -s -S -toc -t beamer -o HandlingMissingData.pdf HandlingMissingData.md
-
 -->
 
 Suppose we want to mine sales records to see what kind of customer buys more from us.
@@ -135,15 +134,13 @@ Suppose we want to mine sales records to see what kind of customer buys more fro
 
 Suppose we want to mine sales records to see what kind of customer buys more from us.
 
- sales  female   education               income
------- -------- -----------             -------
-  1209       0       high school          35000
-  2587       0       4yr degree           45000
- 13265       1       some college         65000
-  5687       0       some college         49000
-  
-  mean     mode      median
------- -------- -----------             -------
+ sales     female    education         income
+------    --------  -----------       -------
+  1209      0        high school        35000
+  2587    **0**      4yr degree         45000
+ 13265      1        some college       65000
+ **5687**   0        **some college**   49000
+ **mean** **mode**   **median**
 
 ## Mean, Median, Mode (continued)
 
@@ -257,11 +254,8 @@ summary(a.out)
 
 ## Amelia Example (continued)
 
-```{r Amelia4, fig.height=3, fig.width=4, echo=FALSE}
-original.par <- par(no.readonly = TRUE)
-par(omi=c(0,0,0,0), mar=c(2,1,1,.25), ps=8, tcl=-.3, mgp=c(.4, .4, 0), yaxt="n")
-plot(a.out, xlab="", ylab="Density")
-par(original.par)
+```{r Amelia4, size='scriptsize', fig.cap=''}
+plot(a.out)
 ```
 
 ## That's hard. What have we gained or lost?
@@ -333,16 +327,24 @@ library(missForest)
 africa.rf <- missForest(africa)
 ```
 
-* Keep **all** of the trees in the forest.
-* Aggregate as with other simulations
-
-## Large Data Sets: Random Forest Classifier (continued)
-
+* Yields very good point predictions (single imputation).
 * Scales well.
-* Forest gives us reasonable measures of uncertainty.
 * Requires a **lot** of data (think non-parametric).
 * Without care might give silly values.
 * Still should check imputed distributions against observed distributions.
+
+## Large Data Sets: Random Forest Classifier (continued)
+
+* If you want good measures of uncertainty (multiple imputation) then you'll have to find some way to keep the <tt>ntrees</tt> individual trees used in each of the <tt>nvars</tt> forests.
+* Run <tt>randomForest(..., keep.forest=TRUE)</tt> with each column as dependent variable.
+    * Result: <tt>ntrees</tt> $\times$ <tt>nvars</tt> trees
+* Use <tt>lapply</tt> to get <tt>ntrees</tt> imputed data sets.
+    * Create <tt>ntrees</tt> target copies of the original data set.
+    * For each column use the forest which had that column as the dependent variable.
+    * For each empty cell generate a predicion for each tree in that forest.
+    * Store the result for each tree in the corresponding target copy.
+* Run your analysis over each of the imputed data sets.
+* Aggregate the results using <tt>mean</tt> and <tt>sd</tt>.
 
 ## Real-Time: <tt>FastImputation</tt>
 
@@ -350,7 +352,7 @@ africa.rf <- missForest(africa)
 * Same model as Amelia
 * Learns (slowly) using lots of data
 * Imputes a single row at a time (very, well, fast)
-* On CRAN
+* Available on CRAN
 * Caveat emptor (as with all <tt>R</tt> packages)
 
 # When Imputation Fails
